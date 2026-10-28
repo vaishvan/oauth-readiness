@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 1,
+  "slug": "hubspot",
+  "appName": "HubSpot",
+  "appUrl": "https://www.hubspot.com/",
+  "developerConsoleUrl": "https://developers.hubspot.com/",
+  "docsUrl": "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/manage-apps-in-hubspot.md",
+  "oauthVersion": "oauth2",
+  "pkceSupported": "unknown",
+  "refreshTokens": "unknown",
+  "composioManaged": "unknown",
+  "verdict": {
+    "difficulty": 2,
+    "label": "Easy",
+    "oneLiner": "Quick to start; unlisted apps stop at 25 installs until the Marketplace listing is approved.",
+    "timeToS1": {
+      "lowMin": 22,
+      "highMin": 40
+    },
+    "timeToS3": {
+      "lowDays": 0.3,
+      "highDays": 0.5,
+      "hasReview": true
+    },
+    "s2Limit": "25 installs until the Marketplace listing is approved",
+    "agentShare": 0.29
+  },
+  "scopes": [
+    {
+      "name": "crm.objects.contacts.read",
+      "tier": "basic"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "req_1",
+      "label": "HubSpot developer account",
+      "category": "account",
+      "requiredAt": "S0",
+      "claimIds": [
+        "clm_4"
+      ]
+    },
+    {
+      "id": "req_2",
+      "label": "Marketplace listing approval",
+      "category": "business",
+      "requiredAt": "S3",
+      "claimIds": [
+        "clm_1"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "stp_1",
+      "stage": "S0",
+      "title": "Create a developer account",
+      "detail": "Sign up for a free developer account and a test account.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      },
+      "claimIds": [
+        "clm_4"
+      ]
+    },
+    {
+      "id": "stp_2",
+      "stage": "S0",
+      "title": "Pick the minimum scopes",
+      "detail": "Choose only the scopes the integration needs.",
+      "owner": "agent",
+      "agentAction": "Map features to the smallest scope set.",
+      "estMinutes": {
+        "low": 2,
+        "high": 5
+      },
+      "claimIds": []
+    },
+    {
+      "id": "stp_3",
+      "stage": "S0",
+      "title": "Create the app",
+      "detail": "Create the app in the developer account.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      },
+      "url": "https://developers.hubspot.com/",
+      "claimIds": [
+        "clm_5"
+      ]
+    },
+    {
+      "id": "stp_4",
+      "stage": "S1",
+      "title": "Set redirect URL and install in the test account",
+      "detail": "Run the flow end to end with your own account.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 10,
+        "high": 15
+      },
+      "claimIds": [
+        "clm_5"
+      ]
+    },
+    {
+      "id": "stp_5",
+      "stage": "S2",
+      "title": "Install for early customers",
+      "detail": "Stay within the 25-install cap while the listing is pending.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 5,
+        "high": 15
+      },
+      "claimIds": [
+        "clm_1",
+        "clm_2"
+      ]
+    },
+    {
+      "id": "stp_6",
+      "stage": "S3",
+      "title": "Prepare listing materials",
+      "detail": "Draft the listing, privacy and support pages.",
+      "owner": "agent",
+      "agentAction": "Draft listing text and screenshots checklist.",
+      "estMinutes": {
+        "low": 30,
+        "high": 60
+      },
+      "claimIds": []
+    },
+    {
+      "id": "stp_7",
+      "stage": "S3",
+      "title": "Wait for Marketplace listing approval",
+      "detail": "The duration is not published in the pages checked.",
+      "owner": "provider",
+      "estMinutes": {
+        "low": 0,
+        "high": 0
+      },
+      "claimIds": [
+        "clm_1",
+        "clm_3",
+        "clm_6"
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "blk_1",
+      "symptom": "Install limit reached",
+      "cause": "The unlisted app reached 25 installs.",
+      "fix": "Get the Marketplace listing approved, or move customers to a private app within its account limit.",
+      "claimIds": [
+        "clm_1",
+        "clm_2"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "clm_1",
+      "text": "An unlisted marketplace-distribution app is capped at 25 installs until its listing is approved.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_1"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.85
+    },
+    {
+      "id": "clm_2",
+      "text": "Private OAuth apps can install into up to 10 accounts, or 100 for Solution Partners.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_2"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "clm_3",
+      "text": "A Marketplace listing lasts up to 12 months, then needs re-review.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_3"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "clm_4",
+      "text": "A free HubSpot developer account is enough to create the app.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Not yet tested by hand; confirm in the console."
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_5",
+      "text": "Create the app in the developer account, set redirect URL and scopes, then copy client ID and secret.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Not yet tested by hand; confirm in the console."
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_6",
+      "text": "Listing review duration is not published in the pages checked.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Left out of the estimates on purpose."
+      },
+      "confidence": 0.3
+    }
+  ],
+  "sources": [
+    {
+      "id": "src_1",
+      "url": "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/manage-apps-in-hubspot.md",
+      "title": "Manage apps in HubSpot",
+      "publisher": "official",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    },
+    {
+      "id": "src_2",
+      "url": "https://community.hubspot.com/t/new-marketplace-distribution-app-install-limits/139886",
+      "title": "Marketplace distribution app install limits",
+      "publisher": "official",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    },
+    {
+      "id": "src_3",
+      "url": "https://developers.hubspot.com/docs/api/app-marketplace-listing-requirements",
+      "title": "App Marketplace listing requirements",
+      "publisher": "official",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    }
+  ],
+  "uncertainties": [
+    "Listing review duration was not found in the checked pages, so S3 time counts only developer work.",
+    "Console steps are unverified until the hands-on attempt (PRD section 11)."
+  ],
+  "meta": {
+    "origin": "seed",
+    "generatedAt": "2026-10-27T00:00:00.000Z",
+    "model": "hand-assembled from PRD section 12",
+    "durationMs": 0,
+    "tokensIn": 0,
+    "tokensOut": 0,
+    "costUsd": 0,
+    "reviewedByHuman": false,
+    "validationWarnings": [
+      "Seeded from PRD section 12 facts. Hands-on attempts (PRD section 11) are still pending, so console steps are unverified."
+    ]
+  }
+}

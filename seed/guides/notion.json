@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "slug": "notion",
+  "appName": "Notion",
+  "appUrl": "https://www.notion.so/",
+  "developerConsoleUrl": "https://www.notion.so/profile/integrations",
+  "docsUrl": "https://developers.notion.com/",
+  "oauthVersion": "oauth2",
+  "pkceSupported": "unknown",
+  "refreshTokens": "unknown",
+  "composioManaged": "unknown",
+  "verdict": {
+    "difficulty": 1,
+    "label": "Instant",
+    "oneLiner": "Self-serve: a public integration works without review; Integration Gallery listing is a separate review.",
+    "timeToS1": {
+      "lowMin": 12,
+      "highMin": 20
+    },
+    "timeToS3": {
+      "lowDays": 0.1,
+      "highDays": 0.2,
+      "hasReview": false
+    },
+    "s2Limit": null,
+    "agentShare": 0.4
+  },
+  "scopes": [],
+  "requirements": [
+    {
+      "id": "req_1",
+      "label": "Notion account with workspace owner rights",
+      "category": "account",
+      "requiredAt": "S0",
+      "claimIds": [
+        "clm_4"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "stp_1",
+      "stage": "S0",
+      "title": "Decide public or internal integration",
+      "detail": "Only a public integration supports OAuth for other workspaces.",
+      "owner": "agent",
+      "estMinutes": {
+        "low": 2,
+        "high": 4
+      },
+      "claimIds": [
+        "clm_4"
+      ]
+    },
+    {
+      "id": "stp_2",
+      "stage": "S0",
+      "title": "Create a public integration",
+      "detail": "Open the integrations page, create an integration, switch it to Public and fill the required company details.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 5,
+        "high": 8
+      },
+      "url": "https://www.notion.so/profile/integrations",
+      "claimIds": [
+        "clm_4"
+      ]
+    },
+    {
+      "id": "stp_3",
+      "stage": "S1",
+      "title": "Add the redirect URI",
+      "detail": "Register your callback exactly as your app sends it.",
+      "owner": "agent",
+      "agentAction": "Generate the callback URL for dev and prod hosts.",
+      "estMinutes": {
+        "low": 1,
+        "high": 2
+      },
+      "claimIds": []
+    },
+    {
+      "id": "stp_4",
+      "stage": "S1",
+      "title": "Run the OAuth flow",
+      "detail": "Authorize from your own workspace, pick pages to share, exchange the code.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 4,
+        "high": 6
+      },
+      "claimIds": [
+        "clm_5",
+        "clm_1"
+      ]
+    },
+    {
+      "id": "stp_5",
+      "stage": "S2",
+      "title": "Connect from a second workspace",
+      "detail": "This settles whether public OAuth needs a review (see uncertainties).",
+      "owner": "you",
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      },
+      "claimIds": [
+        "clm_2",
+        "clm_3"
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "blk_1",
+      "symptom": "invalid_grant",
+      "cause": "The authorization code was reused or expired before the token exchange.",
+      "fix": "Exchange the code once, immediately after the redirect.",
+      "claimIds": []
+    }
+  ],
+  "claims": [
+    {
+      "id": "clm_1",
+      "text": "Notion issues no refresh token and the access token does not expire (third-party).",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_2"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.6
+    },
+    {
+      "id": "clm_2",
+      "text": "n8n docs say public integrations need a Notion security review before publishing.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_1"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.6
+    },
+    {
+      "id": "clm_3",
+      "text": "Notion's own FAQ says the review applies to Integration Gallery listing, not to public OAuth.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Conflicts with clm_2. Settle by making an integration public and connecting a second workspace."
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_4",
+      "text": "Create an integration of type Public, add the redirect URI, and read the OAuth client ID and secret from its page.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Not yet tested by hand; confirm in the console."
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_5",
+      "text": "During OAuth the user chooses which pages the integration can see.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Not yet tested by hand; confirm in the console."
+      },
+      "confidence": 0.3
+    }
+  ],
+  "sources": [
+    {
+      "id": "src_1",
+      "url": "https://docs.n8n.io/integrations/builtin/credentials/notion/",
+      "title": "n8n: Notion credentials",
+      "publisher": "third_party",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    },
+    {
+      "id": "src_2",
+      "url": "https://www.nango.dev/docs/integrations/all/notion-scim.md",
+      "title": "Nango: Notion",
+      "publisher": "third_party",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    }
+  ],
+  "uncertainties": [
+    "Sources conflict on whether public OAuth needs a security review. Treated as no review until tested (PRD section 10).",
+    "No official Notion page was fetched for this guide; all console steps are unverified."
+  ],
+  "meta": {
+    "origin": "seed",
+    "generatedAt": "2026-10-27T00:00:00.000Z",
+    "model": "hand-assembled from PRD section 12",
+    "durationMs": 0,
+    "tokensIn": 0,
+    "tokensOut": 0,
+    "costUsd": 0,
+    "reviewedByHuman": false,
+    "validationWarnings": [
+      "Seeded from PRD section 12 facts. Hands-on attempts (PRD section 11) are still pending, so console steps are unverified."
+    ]
+  }
+}

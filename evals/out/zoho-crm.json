@@ -1,0 +1,468 @@
+{
+  "meta": {
+    "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "origin": "live",
+    "costUsd": 0,
+    "tokensIn": 27713,
+    "tokensOut": 5744,
+    "durationMs": 135866,
+    "generatedAt": "2026-10-28T06:26:45.210Z",
+    "promptVersion": "extract.v1",
+    "reviewedByHuman": false,
+    "validationWarnings": []
+  },
+  "slug": "zoho-crm",
+  "steps": [
+    {
+      "id": "stp_s0_account",
+      "owner": "you",
+      "stage": "S0",
+      "title": "Create or sign in to Zoho account",
+      "detail": "Go to accounts.zoho.com and sign in or create a new Zoho account. This account will own the OAuth client.",
+      "claimIds": [
+        "clm_account"
+      ],
+      "estMinutes": {
+        "low": 2,
+        "high": 5
+      },
+      "agentAction": "None; developer must sign in"
+    },
+    {
+      "id": "stp_s0_console",
+      "url": "https://api-console.zoho.com/",
+      "owner": "you",
+      "stage": "S0",
+      "title": "Open Zoho API Console and start registration",
+      "detail": "Navigate to https://api-console.zoho.com/, click GET STARTED, then choose your client type (Server-based for typical AI agents) and click CREATE NOW.",
+      "claimIds": [
+        "clm_register"
+      ],
+      "estMinutes": {
+        "low": 2,
+        "high": 5
+      },
+      "agentAction": "Open console URL and identify client type"
+    },
+    {
+      "id": "stp_s0_details",
+      "owner": "you",
+      "stage": "S0",
+      "title": "Fill in client details",
+      "detail": "Enter Client Name, Homepage URL, and Authorized Redirect URI(s). For server-based apps, redirect URI must use https:// (or http:// for localhost). Click CREATE.",
+      "claimIds": [
+        "clm_redirect",
+        "clm_client_type"
+      ],
+      "estMinutes": {
+        "low": 3,
+        "high": 10
+      },
+      "agentAction": "Draft redirect URI list and client metadata"
+    },
+    {
+      "id": "stp_s0_credentials",
+      "owner": "you",
+      "stage": "S0",
+      "title": "Copy Client ID and Client Secret",
+      "detail": "After creation, open the Client Secret tab in the console to view and copy the Client ID and Client Secret. Store them securely.",
+      "claimIds": [
+        "clm_register"
+      ],
+      "estMinutes": {
+        "low": 1,
+        "high": 2
+      },
+      "agentAction": "None; secrets only visible in console"
+    },
+    {
+      "id": "stp_s1_auth_request",
+      "owner": "agent",
+      "stage": "S1",
+      "title": "Build authorization URL and request user consent",
+      "detail": "Construct the authorization URL: https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL&client_id={CLIENT_ID}&response_type=code&access_type=offline&redirect_uri={REDIRECT_URI}&state={STATE}. Direct the user to this URL to grant consent.",
+      "claimIds": [
+        "clm_scopes",
+        "clm_auth_flow"
+      ],
+      "estMinutes": {
+        "low": 5,
+        "high": 15
+      },
+      "agentAction": "Generate authorization URL with required scopes and PKCE if supported"
+    },
+    {
+      "id": "stp_s1_token_exchange",
+      "owner": "agent",
+      "stage": "S1",
+      "title": "Exchange authorization code for access and refresh tokens",
+      "detail": "POST to https://accounts.zoho.com/oauth/v2/token with grant_type=authorization_code, code={AUTH_CODE}, client_id, client_secret, redirect_uri. Save the refresh_token for long-lived access.",
+      "claimIds": [
+        "clm_token_exchange",
+        "clm_refresh"
+      ],
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      },
+      "agentAction": "Make token exchange request and store refresh token securely"
+    },
+    {
+      "id": "stp_s1_api_call",
+      "owner": "agent",
+      "stage": "S1",
+      "title": "Call Zoho CRM API with access token",
+      "detail": "Include Authorization: Bearer {ACCESS_TOKEN} header in API requests to https://www.zohoapis.com/crm/v8/... Access tokens expire in 1 hour.",
+      "claimIds": [
+        "clm_api_call"
+      ],
+      "estMinutes": {
+        "low": 2,
+        "high": 5
+      },
+      "agentAction": "Make test API call to verify token works"
+    },
+    {
+      "id": "stp_s1_refresh",
+      "owner": "agent",
+      "stage": "S1",
+      "title": "Implement token refresh logic",
+      "detail": "When access token expires, POST to https://accounts.zoho.com/oauth/v2/token with grant_type=refresh_token, refresh_token={REFRESH_TOKEN}, client_id, client_secret to obtain a new access token.",
+      "claimIds": [
+        "clm_refresh"
+      ],
+      "estMinutes": {
+        "low": 5,
+        "high": 15
+      },
+      "agentAction": "Implement automatic refresh before token expiry"
+    }
+  ],
+  "appUrl": "https://www.zoho.com/crm/",
+  "claims": [
+    {
+      "id": "clm_account",
+      "text": "A Zoho account is required to access the API Console and register OAuth clients.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "To access the resources of Zoho using the various Zoho APIs, you will need to register your application with Zoho first.",
+        "sourceIds": [
+          "src_7"
+        ]
+      },
+      "confidence": 0.63
+    },
+    {
+      "id": "clm_register",
+      "text": "OAuth clients are registered at https://api-console.zoho.com/ where you get Client ID and Client Secret.",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "Go to Zoho API console (https://api-console.zoho.com/), then click GET STARTED. ... On successful registration of your application, you will get a Client ID and Client secret.",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_client_type",
+      "text": "Five client types are supported: Server-based, Client-based, Mobile-based, Non-browser based, and Self client.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "You can register your application as one of the following client types: Server-based application, Client-based application, Mobile-based application, Non-browser based application, Self client",
+        "sourceIds": [
+          "src_7"
+        ]
+      },
+      "confidence": 0.75
+    },
+    {
+      "id": "clm_redirect",
+      "text": "Authorized Redirect URI must be provided for server-based, client-based, and mobile apps; must start with https:// or http://.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "Authorized Redirect URI ... The URI should begin with https:// or http://. You can add multiple redirect URIs by clicking [plus].",
+        "sourceIds": [
+          "src_7"
+        ]
+      },
+      "confidence": 0.52
+    },
+    {
+      "id": "clm_scopes",
+      "text": "Scopes must be specified in the authorization request; Zoho CRM uses scopes like ZohoCRM.modules.ALL.",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "OAuth Scopes ... Scopes ... Step1: Registering a Client ... Step2: Making the Authorization Request",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_auth_flow",
+      "text": "Authorization code flow: redirect user to accounts.zoho.com/oauth/v2/auth with scope, client_id, response_type=code, access_type=offline, redirect_uri, state.",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "Server-based apps can use the authorization code flow to generate an access token ... access token will be provided only after the user grants permission through consent.",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_token_exchange",
+      "text": "Exchange authorization code for tokens via POST to accounts.zoho.com/oauth/v2/token with grant_type=authorization_code.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "Get access token ... Server-based apps can use the authorization code flow to generate an access token",
+        "sourceIds": [
+          "src_3"
+        ]
+      },
+      "confidence": 0.52
+    },
+    {
+      "id": "clm_refresh",
+      "text": "Access tokens expire in 1 hour; refresh tokens can be used to obtain new access tokens via grant_type=refresh_token.",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "Access tokens have limited validity, i.e., their lifetime is only 1 hour ... a refresh token can be retrieved and stored. This refresh token allows the app to generate a new access token whenever required.",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_api_call",
+      "text": "API calls use Bearer token in Authorization header: Authorization: Bearer {access-token-value}.",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "Zoho's OAuth implementation uses Bearer authentication scheme ... Authorization: Bearer <space> {access-token-value}",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_marketplace",
+      "text": "Apps can be published to Zoho Marketplace after review, or shared privately with invited clients via Developer Portal.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "The developer then has the ability to access the Zoho Developer Portal for the purpose of creating applications and for privately sharing the applications with clients, publishing them in the marketplace for free or on a paid basis",
+        "sourceIds": [
+          "src_1"
+        ]
+      },
+      "confidence": 0.9
+    }
+  ],
+  "scopes": [
+    {
+      "name": "ZohoCRM.modules.ALL",
+      "note": "Full access to all CRM modules",
+      "tier": "basic"
+    },
+    {
+      "name": "ZohoCRM.settings.ALL",
+      "note": "Access to CRM settings and metadata",
+      "tier": "basic"
+    },
+    {
+      "name": "ZohoCRM.users.ALL",
+      "note": "Access to user and organization data",
+      "tier": "basic"
+    },
+    {
+      "name": "ZohoCRM.bulk.ALL",
+      "note": "Bulk read/write operations",
+      "tier": "basic"
+    },
+    {
+      "name": "ZohoCRM.webhooks.ALL",
+      "note": "Webhook management",
+      "tier": "basic"
+    }
+  ],
+  "appName": "Zoho CRM",
+  "docsUrl": "https://www.zoho.com/crm/developer/docs/api/v8/oauth-overview.html",
+  "sources": [
+    {
+      "id": "src_1",
+      "url": "https://help.zoho.com/portal/en/community/topic/how-to-publish-applications-on-zoho-marketplace",
+      "title": "How To Publish Applications On Zoho Marketplace?",
+      "fetchedAt": "2026-10-28T06:24:49.782Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_2",
+      "url": "https://help.zoho.com/portal/en/kb/crm/apps-for-zoho-crm/prm-for-zoho-crm/partner-programs/articles/understanding-partner-programs",
+      "title": "Understanding Partner Programs",
+      "fetchedAt": "2026-10-28T06:24:49.784Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_3",
+      "url": "https://www.zoho.com/developer/oauth/introduction.html",
+      "title": "Introduction | OAuth 2.0 - Zoho",
+      "fetchedAt": "2026-10-28T06:24:49.785Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_4",
+      "url": "https://www.zoho.com/crm/developer/docs/api/v8/oauth-overview.html",
+      "title": "OAuth 2.0 Authentication | Zoho CRM API | V8",
+      "fetchedAt": "2026-10-28T06:24:49.787Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_5",
+      "url": "https://www.zoho.com/books/api/v3/oauth/",
+      "title": "OAuth | Zoho Books | API Documentation",
+      "fetchedAt": "2026-10-28T06:24:49.788Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_6",
+      "url": "https://www.zoho.com/mail/help/api/using-oauth-2.html",
+      "title": "OAuth 2.0 User Guide | Zoho Mail API",
+      "fetchedAt": "2026-10-28T06:24:49.790Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_7",
+      "url": "https://www.zoho.com/developer/oauth/register-app.html",
+      "title": "Register Your App | OAuth 2.0 - Zoho",
+      "fetchedAt": "2026-10-28T06:24:49.792Z",
+      "publisher": "official"
+    }
+  ],
+  "verdict": {
+    "label": "Instant",
+    "s2Limit": "No published limit; private sharing via Zoho Developer Portal clients tab",
+    "oneLiner": "Register a server-based client at api-console.zoho.com, configure redirect URIs, and use authorization code flow with refresh tokens for long-lived access.",
+    "timeToS1": {
+      "lowMin": 25,
+      "highMin": 67
+    },
+    "timeToS3": {
+      "lowDays": 0.2,
+      "highDays": 0.3,
+      "hasReview": false
+    },
+    "agentShare": 0.5,
+    "difficulty": 1
+  },
+  "blockers": [
+    {
+      "id": "blk_redirect_mismatch",
+      "fix": "Ensure the redirect_uri parameter matches a URI listed in the Authorized Redirect URIs field in the console. Use https:// for production.",
+      "cause": "Redirect URI in authorization request does not exactly match one registered in API Console (including scheme, host, path).",
+      "symptom": "redirect_uri_mismatch error during authorization",
+      "claimIds": [
+        "clm_redirect"
+      ]
+    },
+    {
+      "id": "blk_invalid_scope",
+      "fix": "Use exact scope names from Zoho CRM API documentation (e.g., ZohoCRM.modules.ALL). Check scope spelling and availability.",
+      "cause": "Requested scope name is not recognized or not enabled for the client.",
+      "symptom": "invalid_scope error",
+      "claimIds": [
+        "clm_scopes"
+      ]
+    },
+    {
+      "id": "blk_token_expired",
+      "fix": "Use the stored refresh token to obtain a new access token before making API calls.",
+      "cause": "Access tokens are valid for 1 hour only.",
+      "symptom": "Access token expired (401 Unauthorized)",
+      "claimIds": [
+        "clm_refresh"
+      ]
+    },
+    {
+      "id": "blk_refresh_revoked",
+      "fix": "Re-run the authorization code flow to obtain a new refresh token.",
+      "cause": "Refresh token was revoked, expired, or used after access token revocation.",
+      "symptom": "invalid_grant error when refreshing",
+      "claimIds": [
+        "clm_refresh"
+      ]
+    }
+  ],
+  "oauthVersion": "oauth2",
+  "requirements": [
+    {
+      "id": "req_zoho_account",
+      "label": "Zoho account",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "account",
+      "claimIds": [
+        "clm_account"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_client_registration",
+      "label": "Register OAuth client at api-console.zoho.com",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "technical",
+      "claimIds": [
+        "clm_register"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_redirect_uri",
+      "label": "Authorized redirect URI (HTTPS for production)",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "technical",
+      "claimIds": [
+        "clm_redirect"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_client_type",
+      "label": "Choose client type: Server-based, Client-based, Mobile, Non-browser, or Self client",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "technical",
+      "claimIds": [
+        "clm_client_type"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_scopes",
+      "label": "Select required OAuth scopes for CRM API access",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "technical",
+      "claimIds": [
+        "clm_scopes"
+      ],
+      "requiredAt": "S1"
+    }
+  ],
+  "pkceSupported": "unknown",
+  "refreshTokens": "yes",
+  "schemaVersion": 1,
+  "uncertainties": [
+    "PKCE support not explicitly documented for Zoho OAuth; may be supported but not confirmed",
+    "Exact list of Zoho CRM scopes not fully enumerated in provided docs; refer to https://www.zoho.com/crm/developer/docs/api/v8/scopes.html",
+    "No OIDC discovery document found; OpenID Connect support unclear",
+    "Marketplace publishing review timeline not specified in docs",
+    "Rate limits for OAuth token endpoints not documented in provided sources"
+  ],
+  "composioManaged": "no",
+  "developerConsoleUrl": "https://api-console.zoho.com/"
+}

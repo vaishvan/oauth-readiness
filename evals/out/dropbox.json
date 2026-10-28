@@ -1,0 +1,521 @@
+{
+  "meta": {
+    "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "origin": "live",
+    "costUsd": 0,
+    "tokensIn": 26315,
+    "tokensOut": 7712,
+    "durationMs": 150465,
+    "generatedAt": "2026-10-28T06:33:06.314Z",
+    "promptVersion": "extract.v1",
+    "reviewedByHuman": false,
+    "validationWarnings": []
+  },
+  "slug": "dropbox",
+  "steps": [
+    {
+      "id": "stp_create_app",
+      "owner": "you",
+      "stage": "S0",
+      "title": "Create a Dropbox app in the App Console",
+      "detail": "Go to https://www.dropbox.com/developers/apps, click Create app, choose Scoped access, pick App Folder or Full Dropbox content access, name the app, and submit. This yields an App Key (client_id) and App Secret (client_secret).",
+      "claimIds": [
+        "clm_register_app",
+        "clm_content_access"
+      ],
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      },
+      "agentAction": "Open the App Console URL and guide the developer through the create-app wizard; the agent cannot create the app on the developer's behalf."
+    },
+    {
+      "id": "stp_configure_permissions",
+      "owner": "you",
+      "stage": "S0",
+      "title": "Configure scopes and redirect URIs",
+      "detail": "In the app's Permissions tab, enable the minimum scopes your agent needs (e.g., files.content.read, files.metadata.read). In the Settings tab, add one or more exact redirect URIs (HTTPS for production, http://localhost allowed for development). Save changes.",
+      "claimIds": [
+        "clm_scopes_selection",
+        "clm_redirect_uri_required"
+      ],
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      },
+      "agentAction": "Read the scopes list from the docs and suggest a minimal set; the developer must click Save in the console."
+    },
+    {
+      "id": "stp_generate_test_token",
+      "owner": "you",
+      "stage": "S1",
+      "title": "Generate a short-lived access token for your own account (optional quick test)",
+      "detail": "In the app's Settings tab, scroll to the OAuth 2 section and click Generate. This produces a token valid for ~4 hours that works only for your own Dropbox account. Use it to verify API calls before building the full OAuth flow.",
+      "claimIds": [
+        "clm_generated_token"
+      ],
+      "estMinutes": {
+        "low": 2,
+        "high": 5
+      },
+      "agentAction": "Show where the Generate button is and how to use the token in an Authorization: Bearer header."
+    },
+    {
+      "id": "stp_implement_oauth_code_flow",
+      "owner": "agent",
+      "stage": "S1",
+      "title": "Implement the OAuth 2.0 authorization code flow (with PKCE for public clients)",
+      "detail": "1) Build the authorization URL: https://www.dropbox.com/oauth2/authorize?client_id=<APP_KEY>&redirect_uri=<REDIRECT_URI>&response_type=code&token_access_type=offline&scope=<SPACE_DELIMITED_SCOPES>&code_challenge=<CHALLENGE>&code_challenge_method=S256&state=<RANDOM>. 2) Redirect the user. 3) On callback, exchange the code at https://api.dropboxapi.com/oauth2/token with grant_type=authorization_code, client_id, client_secret (omit if using PKCE), redirect_uri, and code. 4) Store the returned access_token, expires_in, and refresh_token securely. 5) Use access_token as Bearer token for API calls. 6) When access_token expires, POST to /oauth2/token with grant_type=refresh_token, refresh_token, client_id, client_secret to get a new access_token.",
+      "claimIds": [
+        "clm_code_flow",
+        "clm_pkce_recommended",
+        "clm_offline_access",
+        "clm_refresh_token_flow"
+      ],
+      "estMinutes": {
+        "low": 20,
+        "high": 60
+      },
+      "agentAction": "Generate the authorization URL with proper PKCE parameters, provide code for the token exchange and refresh flows, and validate the redirect URI matches the registered value."
+    },
+    {
+      "id": "stp_incremental_scopes",
+      "owner": "agent",
+      "stage": "S2",
+      "title": "Request additional scopes incrementally using include_granted_scopes",
+      "detail": "If your agent needs more permissions later, redirect the user to the authorization URL again with the new scope(s) and include_granted_scopes=user. The resulting token will contain both the previously granted and newly requested scopes. This avoids re-prompting for already-granted permissions.",
+      "claimIds": [
+        "clm_incremental_scopes"
+      ],
+      "estMinutes": {
+        "low": 10,
+        "high": 20
+      },
+      "agentAction": "Construct the incremental authorization URL and handle the updated token response."
+    },
+    {
+      "id": "stp_production_ready",
+      "owner": "you",
+      "stage": "S3",
+      "title": "Deploy to production — no app review required",
+      "detail": "Dropbox does not require an app review for public OAuth apps. Once your OAuth flow works in development, you can immediately use it with any Dropbox user. Ensure your redirect URIs use HTTPS, store refresh tokens securely, and handle token revocation (user can unlink via Connected Apps page).",
+      "claimIds": [
+        "clm_no_review",
+        "clm_token_revocation"
+      ],
+      "estMinutes": {
+        "low": 10,
+        "high": 20
+      },
+      "agentAction": "Verify the production redirect URIs are registered, confirm HTTPS, and add token revocation handling."
+    }
+  ],
+  "appUrl": "https://www.dropbox.com",
+  "claims": [
+    {
+      "id": "clm_register_app",
+      "text": "Apps are registered in the Dropbox App Console at https://www.dropbox.com/developers/apps, which yields an App Key (client_id) and App Secret (client_secret).",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "Before you can get started, you'll need to register your app with Dropbox by creating a new app in the App Console. That page will guide you through the process of registering your app, selecting permissions, and obtaining an app key and secret (a.k.a. client_id and client_secret)",
+        "sourceIds": [
+          "src_1"
+        ]
+      },
+      "confidence": 0.75
+    },
+    {
+      "id": "clm_content_access",
+      "text": "When creating an app, you must choose either App Folder (access only to /Apps/<app-name>) or Full Dropbox (access to all user files).",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "Currently, these two options are: - App Folder: Your application will be able to take actions allowed by its scopes on data within its app folder only (in the /apps folder). - Full Dropbox: Your application will be able to take actions allowed by its scopes on all data within the user's Dropbox.",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_scopes_selection",
+      "text": "Scopes are selected on the Permissions tab in the App Console and define the maximum permissions the app can request.",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "When you create your application in the App Console, you'll choose from different scopes in the 'Permissions' tab. The selected scopes are applied to your access token and determine which API calls your application is allowed to execute.",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_redirect_uri_required",
+      "text": "Redirect URIs must be registered exactly in the App Console Settings tab; Dropbox validates the redirect_uri parameter against registered values at authorization time.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "You'll need to register the exact redirect URI(s) your app may use in the App Console for your application. Dropbox checks that the specified redirect_uri parameter in your Authorization URL matches one of the registered values at authorization time.",
+        "sourceIds": [
+          "src_1"
+        ]
+      },
+      "confidence": 0.75
+    },
+    {
+      "id": "clm_code_flow",
+      "text": "The recommended OAuth flow is the authorization code flow: redirect to /oauth2/authorize with response_type=code, receive code at redirect_uri, exchange code at /oauth2/token for access_token.",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "The code flow is the recommended OAuth flow for all types of applications. In order to implement it, your application should: 1. Construct a Dropbox authorization URL... 2. Wait for the end user to complete authorization... 3. Call the /oauth2/token endpoint with your app's client_secret to exchange",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_pkce_recommended",
+      "text": "PKCE (code_challenge_method=S256) is recommended for apps that cannot keep client_secret secure (SPAs, mobile, desktop, open source).",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "When using the code flow, your app must keep the client_secret secure. If your app can't guarantee it's security, then we recommend the use of PKCE as described below... PKCE is an open extension to OAuth 2.0, and solves this problem using dynamic codes instead of the static client_secret.",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_offline_access",
+      "text": "To receive a refresh_token, include token_access_type=offline in the authorization request; the token response will then include a refresh_token that does not expire automatically.",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "Construct the /oauth2/authorize URL like the following, with token_access_type=offline... The response will look like this: {'access_token': '<ACCESS TOKEN>', 'expires_in': '<EXPIRATION>', 'token_type': 'bearer', 'scope': '<SCOPES>', 'refresh_token': '<REFRESH TOKEN>', 'account_id': '<ACCOUNT ID>',",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_refresh_token_flow",
+      "text": "Refresh tokens are used by POSTing to /oauth2/token with grant_type=refresh_token, refresh_token, client_id, client_secret to get a new short-lived access_token.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "Once the current short-lived access token expires, call the /oauth2/token endpoint with the refresh token to get a new short-lived access token, like this: curl https://api.dropbox.com/oauth2/token -d refresh_token=<REFRESH TOKEN> -d grant_type=refresh_token -d client_id=<APP KEY> -d client_secret=<",
+        "sourceIds": [
+          "src_3"
+        ]
+      },
+      "confidence": 0.75
+    },
+    {
+      "id": "clm_generated_token",
+      "text": "A generated access token from the App Console works only for the developer's own account and expires in ~4 hours; it is for testing only.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "If you'd like to quickly test out the Dropbox APIs using your own Dropbox account before implementing OAuth, you can generate an access token from your newly created app in My apps by pressing the button that says 'Generate' in the OAuth 2 section of your app settings page. Keep in mind that this is",
+        "sourceIds": [
+          "src_1"
+        ]
+      },
+      "confidence": 0.52
+    },
+    {
+      "id": "clm_incremental_scopes",
+      "text": "Scopes can be requested incrementally at authorization time using the scope parameter and include_granted_scopes=user to add to previously granted scopes.",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "You can also use the include_granted_scopes parameter to make it easier to request additional scopes without explicitly listing the previously granted scopes again... If the user authorizes the app using that /oauth2/authorize URL, the app will then receive a payload like the following... 'scope': '",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_no_review",
+      "text": "Dropbox does not require an app review for public OAuth apps; once the OAuth flow works, any Dropbox user can authorize the app.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "Do not instruct your users to register their own Dropbox application to use your app - you just need to register your app once. Your end-users will connect to that app via the OAuth flow.",
+        "sourceIds": [
+          "src_1"
+        ]
+      },
+      "confidence": 0.63
+    },
+    {
+      "id": "clm_token_revocation",
+      "text": "Users can revoke access via the Connected Apps page; team admins can unlink apps via the Team Apps page; apps can revoke tokens via /2/auth/token/revoke.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "Access tokens and refresh tokens can be revoked on demand though, by the app or user. For example, users can unlink apps from their account using the Connected apps page, and team admins can unlink apps from their teams using the Team apps page. Apps can revoke an access token (and corresponding",
+        "sourceIds": [
+          "src_3"
+        ]
+      },
+      "confidence": 0.75
+    }
+  ],
+  "scopes": [
+    {
+      "name": "account_info.read",
+      "note": "Required for all user-linked apps; reads basic account info.",
+      "tier": "basic"
+    },
+    {
+      "name": "files.content.read",
+      "note": "Read file contents.",
+      "tier": "basic"
+    },
+    {
+      "name": "files.content.write",
+      "note": "Write file contents.",
+      "tier": "basic"
+    },
+    {
+      "name": "files.metadata.read",
+      "note": "Read file/folder metadata.",
+      "tier": "basic"
+    },
+    {
+      "name": "files.metadata.write",
+      "note": "Write file/folder metadata.",
+      "tier": "basic"
+    },
+    {
+      "name": "sharing.read",
+      "note": "Read sharing settings and shared links.",
+      "tier": "basic"
+    },
+    {
+      "name": "sharing.write",
+      "note": "Modify sharing settings and create shared links.",
+      "tier": "basic"
+    },
+    {
+      "name": "team_info.read",
+      "note": "Read team information (Business API).",
+      "tier": "basic"
+    },
+    {
+      "name": "team_data.member",
+      "note": "Access team member file data (Business API).",
+      "tier": "sensitive"
+    },
+    {
+      "name": "team_data.team_space",
+      "note": "Access team space data (Business API).",
+      "tier": "sensitive"
+    },
+    {
+      "name": "events.read",
+      "note": "Read event log (Business API).",
+      "tier": "basic"
+    }
+  ],
+  "appName": "Dropbox",
+  "docsUrl": "https://docs.dropboxapi.com/dropbox-api/docs/oauth",
+  "sources": [
+    {
+      "id": "src_1",
+      "url": "https://docs.dropboxapi.com/dropbox-api/docs/oauth",
+      "title": "OAuth | Dropbox API Documentation",
+      "fetchedAt": "2026-10-28T06:30:51.000Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_2",
+      "url": "https://community.dropbox.com/en/discussion/724522/dropbox-api-oauth-2-0-access-token",
+      "title": "Dropbox API OAuth 2.0 Access Token - Dropbox Community",
+      "fetchedAt": "2026-10-28T06:30:51.001Z",
+      "publisher": "community"
+    },
+    {
+      "id": "src_3",
+      "url": "https://dropbox.tech/developers/using-oauth-2-0-with-offline-access",
+      "title": "Using OAuth 2.0 with offline access - Dropbox",
+      "fetchedAt": "2026-10-28T06:30:51.003Z",
+      "publisher": "third_party"
+    },
+    {
+      "id": "src_4",
+      "url": "https://logto.io/oauth-providers-explorer/dropbox",
+      "title": "Dropbox OAuth endpoints",
+      "fetchedAt": "2026-10-28T06:30:51.004Z",
+      "publisher": "third_party"
+    },
+    {
+      "id": "src_5",
+      "url": "https://help.tableau.com/current/server-linux/en-us/config_oauth_dropbox.htm",
+      "title": "Set Up OAuth for Dropbox - Tableau",
+      "fetchedAt": "2026-10-28T06:30:51.007Z",
+      "publisher": "third_party"
+    },
+    {
+      "id": "src_6",
+      "url": "https://www.dropbox.com/business/partners",
+      "title": "Dropbox Partners Program",
+      "fetchedAt": "2026-10-28T06:30:51.009Z",
+      "publisher": "third_party"
+    },
+    {
+      "id": "src_7",
+      "url": "https://www.dropbox.com/partners",
+      "title": "Dropbox Partners and Integrations",
+      "fetchedAt": "2026-10-28T06:30:51.011Z",
+      "publisher": "third_party"
+    },
+    {
+      "id": "src_8",
+      "url": "https://dropbox.tech/developers/customizing-scopes-in-oauth-flow",
+      "title": "Customizing scopes in the OAuth app authorization flow - Dropbox",
+      "fetchedAt": "2026-10-28T06:30:51.013Z",
+      "publisher": "third_party"
+    }
+  ],
+  "verdict": {
+    "label": "Instant",
+    "s2Limit": "No published limit; apps in development mode work for any Dropbox user once OAuth is implemented.",
+    "oneLiner": "Register an app in the Dropbox App Console, pick scopes and content access, add redirect URIs, then run the standard OAuth 2.0 code flow (with PKCE for public/n",
+    "timeToS1": {
+      "lowMin": 32,
+      "highMin": 85
+    },
+    "timeToS3": {
+      "lowDays": 0.3,
+      "highDays": 0.6,
+      "hasReview": false
+    },
+    "agentShare": 0.33,
+    "difficulty": 1
+  },
+  "blockers": [
+    {
+      "id": "blk_redirect_mismatch",
+      "fix": "Copy the exact redirect URI from the App Console and use it verbatim in the authorization URL and token exchange. Ensure no trailing slash differences.",
+      "cause": "The redirect_uri parameter in the authorization URL does not exactly match one of the URIs registered in the App Console Settings tab (including scheme, host, port, and path).",
+      "symptom": "redirect_uri_mismatch error on authorization page",
+      "claimIds": [
+        "clm_redirect_uri_required"
+      ]
+    },
+    {
+      "id": "blk_missing_pkce",
+      "fix": "Implement PKCE: generate a code_verifier (43-128 chars, regex [0-9a-zA-Z-._~]), compute code_challenge=S256(base64url(sha256(code_verifier))), send code_challenge and code_challenge_method=S256 in the authorization request, and send code_verifier (not client_secret) in the token exchange.",
+      "cause": "A single-page app, mobile app, or desktop app includes the client_secret in distributed code, which Dropbox rejects for security.",
+      "symptom": "Invalid client_secret or unauthorized_client error for public clients",
+      "claimIds": [
+        "clm_pkce_recommended"
+      ]
+    },
+    {
+      "id": "blk_expired_access_token",
+      "fix": "Use the stored refresh_token to call /oauth2/token with grant_type=refresh_token, client_id, client_secret, and refresh_token to obtain a new access_token. Implement proactive refresh before expiry.",
+      "cause": "Short-lived access tokens expire after ~4 hours (14400 seconds).",
+      "symptom": "401 Unauthorized or expired_access_token error on API calls",
+      "claimIds": [
+        "clm_refresh_token_flow"
+      ]
+    },
+    {
+      "id": "blk_revoked_refresh_token",
+      "fix": "Catch the invalid_grant error, discard the stored refresh_token, and restart the full OAuth authorization flow to obtain a new grant.",
+      "cause": "The user unlinked the app from their Connected Apps page, or a team admin removed it, or the app called /2/auth/token/revoke.",
+      "symptom": "invalid_grant error when using refresh_token",
+      "claimIds": [
+        "clm_token_revocation"
+      ]
+    },
+    {
+      "id": "blk_wrong_content_access",
+      "fix": "Recreate the app with Full Dropbox content access if you need access to arbitrary user files, or restrict your agent to the app folder path.",
+      "cause": "The app was created with App Folder content access but the code tries to access files outside /Apps/<app-name>.",
+      "symptom": "API calls fail with path/not_found or insufficient_permissions for files outside the app folder",
+      "claimIds": [
+        "clm_content_access"
+      ]
+    }
+  ],
+  "oauthVersion": "oauth2",
+  "requirements": [
+    {
+      "id": "req_dropbox_account",
+      "label": "Dropbox developer account",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "account",
+      "claimIds": [
+        "clm_register_app"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_redirect_uri",
+      "label": "HTTPS redirect URI (or localhost for dev)",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "technical",
+      "claimIds": [
+        "clm_redirect_uri_required"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_content_access_choice",
+      "label": "Choose content access type: App Folder or Full Dropbox",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "technical",
+      "claimIds": [
+        "clm_content_access"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_scopes_selection",
+      "label": "Select OAuth scopes on the Permissions tab",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "technical",
+      "claimIds": [
+        "clm_scopes_selection"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_pkce_for_public_clients",
+      "label": "Implement PKCE if client_secret cannot be kept secret (SPA, mobile, desktop)",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "security",
+      "claimIds": [
+        "clm_pkce_recommended"
+      ],
+      "requiredAt": "S1"
+    },
+    {
+      "id": "req_offline_access_for_refresh",
+      "label": "Request token_access_type=offline to receive refresh tokens",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "technical",
+      "claimIds": [
+        "clm_offline_access"
+      ],
+      "requiredAt": "S1"
+    }
+  ],
+  "pkceSupported": "yes",
+  "refreshTokens": "yes",
+  "schemaVersion": 1,
+  "uncertainties": [
+    "Exact rate limits for OAuth token endpoints are not documented in the provided sources.",
+    "Whether there is a limit on the number of redirect URIs per app is not specified.",
+    "The maximum lifetime of a refresh token (if any) beyond 'does not expire automatically' is not stated.",
+    "Whether app verification/review is required for certain sensitive scopes (e.g., team_data.member) is not explicitly covered.",
+    "The probe indicates no OIDC discovery document; Dropbox uses plain OAuth 2.0 without OpenID Connect."
+  ],
+  "composioManaged": "unknown",
+  "developerConsoleUrl": "https://www.dropbox.com/developers/apps"
+}

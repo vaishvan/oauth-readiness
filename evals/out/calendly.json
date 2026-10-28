@@ -1,0 +1,565 @@
+{
+  "meta": {
+    "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "origin": "live",
+    "costUsd": 0,
+    "tokensIn": 18332,
+    "tokensOut": 5701,
+    "durationMs": 115567,
+    "generatedAt": "2026-10-28T06:30:35.831Z",
+    "promptVersion": "extract.v1",
+    "reviewedByHuman": false,
+    "validationWarnings": []
+  },
+  "slug": "calendly",
+  "steps": [
+    {
+      "id": "stp_1",
+      "owner": "you",
+      "stage": "S0",
+      "title": "Create Calendly developer account",
+      "detail": "Sign up at developer.calendly.com using GitHub or Google. This is separate from a regular Calendly user account.",
+      "claimIds": [
+        "clm_1"
+      ],
+      "estMinutes": {
+        "low": 2,
+        "high": 5
+      },
+      "agentAction": "Open developer.calendly.com and click Sign Up; choose GitHub or Google auth."
+    },
+    {
+      "id": "stp_2",
+      "owner": "you",
+      "stage": "S0",
+      "title": "Register OAuth application in sandbox",
+      "detail": "In the developer portal, click My Apps → Create new app. Provide app name, select Web or Native, choose Sandbox environment, enter redirect URI (HTTP localhost allowed for sandbox), select required scopes. Copy Client ID, Client Secret, and Webhook signing key immediately — they are shown only once.",
+      "claimIds": [
+        "clm_2",
+        "clm_3",
+        "clm_5",
+        "clm_6"
+      ],
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      },
+      "agentAction": "Fill form: name, type=web, environment=sandbox, redirect_uri=http://localhost:3000/callback (or your dev URL), select scopes from catalog. Save credentials securely."
+    },
+    {
+      "id": "stp_3",
+      "owner": "agent",
+      "stage": "S1",
+      "title": "Implement PKCE authorization flow",
+      "detail": "Generate code_verifier and code_challenge (S256). Redirect user to https://auth.calendly.com/oauth/authorize with client_id, redirect_uri, code_challenge, code_challenge_method=S256, and space-separated scopes. After user grants access, receive authorization code at your redirect URI. Exchange code for access token via POST to https://auth.calendly.com/oauth/token with grant_type=authorization_code, code, redirect_uri, and code_verifier.",
+      "claimIds": [
+        "clm_4",
+        "clm_5"
+      ],
+      "estMinutes": {
+        "low": 10,
+        "high": 20
+      },
+      "agentAction": "Write PKCE helper (generate verifier/challenge), build authorize URL, handle callback, exchange code for token. Store refresh token for offline access."
+    },
+    {
+      "id": "stp_4",
+      "owner": "you",
+      "stage": "S1",
+      "title": "Test OAuth flow end-to-end in sandbox",
+      "detail": "Run the authorization flow from your app. Verify you receive access token and refresh token. Call a test API endpoint (e.g., GET /users/me with users:read scope) to confirm token works. Check webhook delivery if using webhooks:write scope.",
+      "claimIds": [
+        "clm_2",
+        "clm_5"
+      ],
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      },
+      "agentAction": "Execute flow in browser or via script; verify token response and API call success."
+    },
+    {
+      "id": "stp_5",
+      "owner": "you",
+      "stage": "S2",
+      "title": "Create production OAuth application",
+      "detail": "In developer portal, create a second OAuth app for Production environment. Use HTTPS redirect URI. Select same scopes. Save new Client ID, Client Secret, Webhook signing key. Update your app config with production credentials.",
+      "claimIds": [
+        "clm_2",
+        "clm_3"
+      ],
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      },
+      "agentAction": "Repeat app creation with environment=production, redirect_uri=https://yourdomain.com/callback. Swap credentials in deployment."
+    },
+    {
+      "id": "stp_6",
+      "owner": "you",
+      "stage": "S3",
+      "title": "Submit to Calendly Partner Marketplace",
+      "detail": "Apply for marketplace listing so users can discover and install your integration from Calendly's Integrations page. The flow is: Calendly → your OAuth sign-in → redirect back to Calendly dashboard. Exact submission process and review criteria are not publicly documented; contact Calendly partnerships or check developer portal for marketplace application.",
+      "claimIds": [
+        "clm_7"
+      ],
+      "waitDays": {
+        "low": 1,
+        "high": 14
+      },
+      "estMinutes": {
+        "low": 30,
+        "high": 60
+      },
+      "agentAction": "Find marketplace application link in developer portal or email partnerships@calendly.com. Prepare app description, logo, privacy policy, and demo video."
+    }
+  ],
+  "appUrl": "https://calendly.com",
+  "claims": [
+    {
+      "id": "clm_1",
+      "text": "Developer account requires GitHub or Google sign-up, separate from user account",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "Sign up for a Calendly developer account using your Github or Google account... Note: This is not your Calendly user account",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_2",
+      "text": "OAuth app registration requires name, type (web/native), environment (sandbox/production), redirect URI, and scopes",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "Provide name of your application... Select the kind of application (web or native)... Select your environment... Redirect URI... Select scopes",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_3",
+      "text": "Sandbox allows HTTP localhost redirect URIs; production requires HTTPS",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "For the Sandbox environment, we allow HTTP with localhost domain. Example: http://localhost:1234... For the Production environment, this must be HTTPS",
+        "sourceIds": [
+          "src_2"
+        ]
+      },
+      "confidence": 0.75
+    },
+    {
+      "id": "clm_4",
+      "text": "PKCE with S256 is required for all OAuth applications",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "For all OAuth applications (web or native) use a specific redirect_uri, a Proof Key for Code Exchange (PKCE), and S256 for code_challenge_method",
+        "sourceIds": [
+          "src_2"
+        ]
+      },
+      "confidence": 0.52
+    },
+    {
+      "id": "clm_5",
+      "text": "Scopes are granular; :write includes :read; webhooks need related read scopes",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "A :write scope implicitly includes the corresponding :read scope within the same domain... Webhook subscriptions must be scoped by the event family you want to receive. Your app must be granted the related read scopes",
+        "sourceIds": [
+          "src_5"
+        ]
+      },
+      "confidence": 0.75
+    },
+    {
+      "id": "clm_6",
+      "text": "Client Secret and Webhook signing key shown only once at creation",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "Be sure to copy these values as you will not be able to access the Client Secret or Webhook signing key again",
+        "sourceIds": [
+          "src_2"
+        ]
+      },
+      "confidence": 0.9
+    },
+    {
+      "id": "clm_7",
+      "text": "Partner Marketplace exists for public app distribution with Calendly → App OAuth → Calendly flow",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "Users click 'Connect' on our app from the Calendly Integrations page... redirected to our OAuth sign-in page... redirected back to Calendly to complete the connection",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_probe_1",
+      "text": "Discovery found at https://calendly.com/.well-known/openid-configuration · PKCE: S256",
+      "evidence": {
+        "kind": "tested",
+        "note": "Probe oidc, unauthenticated GET, 2026-10-28",
+        "sourceIds": []
+      },
+      "confidence": 1
+    },
+    {
+      "id": "clm_probe_2",
+      "text": "Authorize endpoint answered HTTP 200",
+      "evidence": {
+        "kind": "tested",
+        "note": "Probe authorize, unauthenticated GET, 2026-10-28",
+        "sourceIds": []
+      },
+      "confidence": 1
+    }
+  ],
+  "scopes": [
+    {
+      "name": "availability:read",
+      "note": "Read user and event-type availability",
+      "tier": "basic"
+    },
+    {
+      "name": "availability:write",
+      "note": "Update event type availability",
+      "tier": "basic"
+    },
+    {
+      "name": "event_types:read",
+      "note": "Retrieve event type details and available times",
+      "tier": "basic"
+    },
+    {
+      "name": "event_types:write",
+      "note": "Create or update event types",
+      "tier": "basic"
+    },
+    {
+      "name": "locations:read",
+      "note": "Retrieve configured meeting locations",
+      "tier": "basic"
+    },
+    {
+      "name": "routing_forms:read",
+      "note": "Retrieve routing forms and submissions",
+      "tier": "basic"
+    },
+    {
+      "name": "shares:write",
+      "note": "Create single-use scheduling links with customization",
+      "tier": "basic"
+    },
+    {
+      "name": "scheduled_events:read",
+      "note": "Retrieve scheduled events and invitee information",
+      "tier": "basic"
+    },
+    {
+      "name": "scheduled_events:write",
+      "note": "Create invitees, cancel events, mark no-shows",
+      "tier": "basic"
+    },
+    {
+      "name": "scheduling_links:write",
+      "note": "Create single-use scheduling links without customization",
+      "tier": "basic"
+    },
+    {
+      "name": "groups:read",
+      "note": "Retrieve group details and relationships",
+      "tier": "basic"
+    },
+    {
+      "name": "organizations:read",
+      "note": "Retrieve organization data, memberships, invitations",
+      "tier": "basic"
+    },
+    {
+      "name": "organizations:write",
+      "note": "Invite or remove users from an organization",
+      "tier": "sensitive"
+    },
+    {
+      "name": "users:read",
+      "note": "Retrieve user information",
+      "tier": "basic"
+    },
+    {
+      "name": "webhooks:read",
+      "note": "Retrieve webhook subscriptions and sample payloads",
+      "tier": "basic"
+    },
+    {
+      "name": "webhooks:write",
+      "note": "Create or delete webhook subscriptions",
+      "tier": "basic"
+    },
+    {
+      "name": "activity_log:read",
+      "note": "View organization activity log",
+      "tier": "sensitive"
+    },
+    {
+      "name": "data_compliance:write",
+      "note": "Delete invitee or event data (GDPR/CCPA)",
+      "tier": "restricted"
+    },
+    {
+      "name": "outgoing_communications:read",
+      "note": "Retrieve outgoing SMS and email communications",
+      "tier": "sensitive"
+    },
+    {
+      "name": "contacts:read",
+      "note": "Retrieve contact details",
+      "tier": "basic"
+    },
+    {
+      "name": "contacts:write",
+      "note": "Create, update, delete contacts",
+      "tier": "basic"
+    },
+    {
+      "name": "meeting_recaps:read",
+      "note": "Retrieve meeting recaps, transcripts, action items",
+      "tier": "basic"
+    },
+    {
+      "name": "meeting_recaps:write",
+      "note": "Update or delete meeting recaps",
+      "tier": "basic"
+    }
+  ],
+  "appName": "Calendly",
+  "docsUrl": "https://developer.calendly.com/docs/authentication/creating-an-oauth-app",
+  "sources": [
+    {
+      "id": "src_1",
+      "url": "https://community.calendly.com/how-do-i-40/how-to-implement-add-integration-my-app-oauth-sign-in-redirect-back-to-calendly-flow-for-partner-marketplace-4819",
+      "title": "How to implement “Add Integration → MY APP OAuth sign-in → Redirect back to Calendly” flow for Partner Marketplace | Community",
+      "fetchedAt": "2026-10-28T06:28:47.759Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_2",
+      "url": "https://developer.calendly.com/docs/authentication/creating-an-oauth-app",
+      "title": "Creating an OAuth app | Calendly | Developer Documentation",
+      "fetchedAt": "2026-10-28T06:28:47.761Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_3",
+      "url": "https://developer.calendly.com/docs/authentication/overview",
+      "title": "Authentication | Calendly | Developer Documentation",
+      "fetchedAt": "2026-10-28T06:28:47.762Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_4",
+      "url": "https://calendly.com/help/how-to-require-email-verification-for-event-types",
+      "title": "How to require email verification for event types | Calendly Help",
+      "fetchedAt": "2026-10-28T06:28:47.764Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_5",
+      "url": "https://developer.calendly.com/docs/authentication/scopes",
+      "title": "Authorization Scopes | Calendly | Developer Documentation",
+      "fetchedAt": "2026-10-28T06:28:47.766Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_6",
+      "url": "https://developer.calendly.com/api-docs/overview/api/reference",
+      "title": "Introduction | Calendly | Developer Documentation",
+      "fetchedAt": "2026-10-28T06:28:47.767Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_7",
+      "url": "https://developer.calendly.com/api-docs/calendly-api/organizations/get-organization",
+      "title": "Get Organization | Calendly | Developer Documentation",
+      "fetchedAt": "2026-10-28T06:28:47.769Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_8",
+      "url": "https://calendly.com/",
+      "title": "Meeting Scheduling Software and AI Meeting Tools | Calendly",
+      "fetchedAt": "2026-10-28T06:28:47.770Z",
+      "publisher": "official"
+    }
+  ],
+  "verdict": {
+    "label": "Instant",
+    "s2Limit": "Sandbox limited to developer account; production requires marketplace approval for public installs",
+    "oneLiner": "Standard OAuth 2.1 with PKCE; sandbox for dev, production requires HTTPS redirect and marketplace review for public listing.",
+    "timeToS1": {
+      "lowMin": 22,
+      "highMin": 45
+    },
+    "timeToS3": {
+      "lowDays": 0.3,
+      "highDays": 0.5,
+      "hasReview": false
+    },
+    "agentShare": 0.17,
+    "difficulty": 1
+  },
+  "blockers": [
+    {
+      "id": "blk_1",
+      "fix": "Ensure redirect_uri parameter matches the registered URI character-for-character. For sandbox, HTTP localhost is allowed; for production, must be HTTPS.",
+      "cause": "Redirect URI in authorize request does not exactly match the one registered in the OAuth app (including scheme, host, port, path).",
+      "symptom": "redirect_uri_mismatch error during authorization",
+      "claimIds": [
+        "clm_3"
+      ]
+    },
+    {
+      "id": "blk_2",
+      "fix": "Store code_verifier in session/state between authorize and token steps. Use S256 method. Verify code_challenge = base64url(sha256(code_verifier)).",
+      "cause": "PKCE code_verifier sent in token request does not match the code_challenge from authorize request, or code_verifier was not stored correctly.",
+      "symptom": "invalid_grant or code_verifier mismatch when exchanging code",
+      "claimIds": [
+        "clm_4"
+      ]
+    },
+    {
+      "id": "blk_3",
+      "fix": "Check endpoint's required scopes in API reference. Request all needed scopes in authorize URL. For existing installs, re-run OAuth flow to request additional scopes.",
+      "cause": "Access token missing required scope for the endpoint, or user declined a requested scope during install.",
+      "symptom": "403 insufficient permissions when calling API",
+      "claimIds": [
+        "clm_5"
+      ]
+    },
+    {
+      "id": "blk_4",
+      "fix": "Save them immediately in a secure password manager. If lost, create a new OAuth app and update all integrations (reapply_penalty).",
+      "cause": "These values are displayed only once at creation and cannot be retrieved later.",
+      "symptom": "Client Secret or Webhook signing key lost after app creation",
+      "claimIds": [
+        "clm_6"
+      ]
+    },
+    {
+      "id": "blk_5",
+      "fix": "Ensure webhooks:write is granted. Verify subscription event family matches a granted read scope (e.g., scheduled_events:read for event events).",
+      "cause": "Missing webhooks:write scope, or subscription event family not covered by granted read scopes.",
+      "symptom": "Webhooks not delivering events",
+      "claimIds": [
+        "clm_5"
+      ]
+    }
+  ],
+  "oauthVersion": "oauth2",
+  "requirements": [
+    {
+      "id": "req_dev_account",
+      "label": "Calendly developer account (GitHub or Google)",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "account",
+      "claimIds": [
+        "clm_1"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_oauth_app",
+      "label": "OAuth application registered in developer portal",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "technical",
+      "claimIds": [
+        "clm_2"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_redirect_uri",
+      "label": "HTTPS redirect URI for production (HTTP localhost allowed for sandbox)",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "technical",
+      "claimIds": [
+        "clm_3"
+      ],
+      "requiredAt": "S1"
+    },
+    {
+      "id": "req_pkce",
+      "label": "PKCE with S256 code challenge method implementation",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "security",
+      "claimIds": [
+        "clm_4"
+      ],
+      "requiredAt": "S1"
+    },
+    {
+      "id": "req_scopes",
+      "label": "Minimum required scopes selected for your use case",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "technical",
+      "claimIds": [
+        "clm_5"
+      ],
+      "requiredAt": "S1"
+    },
+    {
+      "id": "req_client_secret",
+      "label": "Client Secret and Webhook signing key saved at creation (shown once)",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "security",
+      "claimIds": [
+        "clm_6"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_marketplace",
+      "label": "Partner Marketplace submission for public distribution",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "business",
+      "claimIds": [
+        "clm_7"
+      ],
+      "requiredAt": "S3"
+    }
+  ],
+  "pkceSupported": "yes",
+  "refreshTokens": "yes",
+  "schemaVersion": 1,
+  "uncertainties": [
+    "Partner Marketplace submission process, review criteria, and timeline not documented publicly",
+    "Whether production OAuth app requires separate review before use (vs. just marketplace listing)",
+    "Rate limits for API calls not found in provided docs",
+    "Exact redirect URI format for marketplace-initiated flow (Calendly → App → Calendly)",
+    "Cost or revenue share for marketplace listing",
+    "Whether personal access tokens can be used alongside OAuth for same app"
+  ],
+  "composioManaged": "no",
+  "developerConsoleUrl": "https://developer.calendly.com"
+}

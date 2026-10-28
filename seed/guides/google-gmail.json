@@ -1,0 +1,431 @@
+{
+  "schemaVersion": 1,
+  "slug": "google-gmail",
+  "appName": "Google (Gmail)",
+  "appUrl": "https://mail.google.com/",
+  "developerConsoleUrl": "https://console.cloud.google.com/auth/overview",
+  "docsUrl": "https://developers.google.com/identity/protocols/oauth2/production-readiness/overview",
+  "oauthVersion": "oauth2",
+  "pkceSupported": "unknown",
+  "refreshTokens": "unknown",
+  "composioManaged": "unknown",
+  "verdict": {
+    "difficulty": 3,
+    "label": "Moderate",
+    "oneLiner": "Working in 30 minutes, but restricted Gmail scopes need verification plus a paid annual CASA assessment.",
+    "timeToS1": {
+      "lowMin": 26,
+      "highMin": 45
+    },
+    "timeToS3": {
+      "lowDays": 30,
+      "highDays": 61,
+      "hasReview": true
+    },
+    "s2Limit": "100 test users; test-user authorizations expire after 7 days",
+    "agentShare": 0.22
+  },
+  "scopes": [
+    {
+      "name": "openid",
+      "tier": "basic"
+    },
+    {
+      "name": "https://www.googleapis.com/auth/gmail.readonly",
+      "tier": "restricted",
+      "note": "Triggers CASA (unverified list membership)."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "req_1",
+      "label": "Google Cloud project",
+      "category": "account",
+      "requiredAt": "S0",
+      "claimIds": [
+        "clm_9"
+      ]
+    },
+    {
+      "id": "req_2",
+      "label": "Verified domain and brand",
+      "category": "brand",
+      "requiredAt": "S3",
+      "claimIds": [
+        "clm_4"
+      ]
+    },
+    {
+      "id": "req_3",
+      "label": "Published privacy policy",
+      "category": "legal",
+      "requiredAt": "S3",
+      "claimIds": []
+    },
+    {
+      "id": "req_4",
+      "label": "Annual CASA security assessment",
+      "category": "security",
+      "requiredAt": "S3",
+      "costUsd": {
+        "low": 500,
+        "high": 4500
+      },
+      "claimIds": [
+        "clm_5",
+        "clm_6"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "stp_1",
+      "stage": "S0",
+      "title": "Create a Cloud project",
+      "detail": "Create a project and enable the Gmail API.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      },
+      "url": "https://console.cloud.google.com/",
+      "claimIds": [
+        "clm_9"
+      ]
+    },
+    {
+      "id": "stp_2",
+      "stage": "S0",
+      "title": "Choose the narrowest Gmail scopes",
+      "detail": "Prefer non-restricted scopes. Restricted scopes trigger the CASA path.",
+      "owner": "agent",
+      "agentAction": "Compare scopes against the features and flag restricted ones.",
+      "estMinutes": {
+        "low": 3,
+        "high": 8
+      },
+      "claimIds": [
+        "clm_10",
+        "clm_5"
+      ]
+    },
+    {
+      "id": "stp_3",
+      "stage": "S0",
+      "title": "Configure the consent screen",
+      "detail": "Set app name, support email, authorized domain.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 8,
+        "high": 12
+      },
+      "claimIds": [
+        "clm_9"
+      ]
+    },
+    {
+      "id": "stp_4",
+      "stage": "S1",
+      "title": "Create the OAuth client and add test users",
+      "detail": "Create a Web client, register redirect URIs, add your account as a test user, run the flow.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 10,
+        "high": 15
+      },
+      "claimIds": [
+        "clm_1",
+        "clm_9"
+      ]
+    },
+    {
+      "id": "stp_5",
+      "stage": "S2",
+      "title": "Invite up to 100 test users",
+      "detail": "Expect re-consent every 7 days while the app is in Testing.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 5,
+        "high": 15
+      },
+      "claimIds": [
+        "clm_1",
+        "clm_2",
+        "clm_3"
+      ]
+    },
+    {
+      "id": "stp_6",
+      "stage": "S3",
+      "title": "Draft privacy policy, scope justifications and demo script",
+      "detail": "These feed the verification submission.",
+      "owner": "agent",
+      "agentAction": "Draft the policy text, per-scope justifications and a video script.",
+      "estMinutes": {
+        "low": 45,
+        "high": 90
+      },
+      "claimIds": []
+    },
+    {
+      "id": "stp_7",
+      "stage": "S3",
+      "title": "Verify domain and submit for verification",
+      "detail": "Verify the domain in Search Console and submit the app.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 30,
+        "high": 60
+      },
+      "claimIds": [
+        "clm_4"
+      ]
+    },
+    {
+      "id": "stp_8",
+      "stage": "S3",
+      "title": "Wait for Google verification review",
+      "detail": "Reported realistic timeline for restricted scopes.",
+      "owner": "provider",
+      "estMinutes": {
+        "low": 0,
+        "high": 0
+      },
+      "waitDays": {
+        "low": 28,
+        "high": 56
+      },
+      "claimIds": [
+        "clm_7"
+      ]
+    },
+    {
+      "id": "stp_9",
+      "stage": "S3",
+      "title": "Complete the CASA assessment with an assessor",
+      "detail": "Engage an authorised assessor, remediate findings, obtain the letter of assessment. Repeats annually.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 240,
+        "high": 960
+      },
+      "claimIds": [
+        "clm_5",
+        "clm_6",
+        "clm_11"
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "blk_1",
+      "symptom": "Error 403: access_denied",
+      "cause": "The app is in Testing and the signed-in user is not on the test-user list.",
+      "fix": "Add the user under Audience > Test users, or publish the app.",
+      "claimIds": [
+        "clm_1"
+      ]
+    },
+    {
+      "id": "blk_2",
+      "symptom": "invalid_grant",
+      "cause": "A test-user refresh token is older than 7 days.",
+      "fix": "Ask the user to consent again, or move to production.",
+      "claimIds": [
+        "clm_2"
+      ]
+    },
+    {
+      "id": "blk_3",
+      "symptom": "This app is blocked",
+      "cause": "A Workspace admin blocked the app for their domain.",
+      "fix": "Ask the customer admin to allow the client ID.",
+      "claimIds": [
+        "clm_8"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "clm_1",
+      "text": "Testing mode caps the app at 100 test users (hard cap).",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_1"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.9
+    },
+    {
+      "id": "clm_2",
+      "text": "Test-user authorizations expire 7 days after consent, including the refresh token.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_2"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.9
+    },
+    {
+      "id": "clm_3",
+      "text": "Apps requesting only openid, email or profile avoid the 7-day expiry and the test-user allowlist.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_2"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "clm_4",
+      "text": "A published but unverified app with sensitive scopes shows an unverified-app warning and a 100-user lifetime cap that cannot be reset.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_2"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "clm_5",
+      "text": "Restricted scopes need a security assessment through the App Defense Alliance CASA program, repeated annually, 12 months after the letter of assessment.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_3"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.9
+    },
+    {
+      "id": "clm_6",
+      "text": "CASA costs $500 to $4,500, paid to the assessor (third-party, reported).",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_4"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.6
+    },
+    {
+      "id": "clm_7",
+      "text": "A realistic restricted-scope timeline is 4 to 8 weeks (third-party, reported).",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_5"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.5
+    },
+    {
+      "id": "clm_8",
+      "text": "Workspace admins can block any app, even a verified one.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_1"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "clm_9",
+      "text": "Create the project in Google Cloud Console, configure the consent screen, then create a Web OAuth client.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Not yet tested by hand; confirm in the console."
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_10",
+      "text": "gmail.readonly is a restricted scope.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Confirm on the Gmail scopes list."
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_11",
+      "text": "The CASA assessment needs several focused days of developer time.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Developer effort is a guess; no source states it."
+      },
+      "confidence": 0.3
+    }
+  ],
+  "sources": [
+    {
+      "id": "src_1",
+      "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/overview",
+      "title": "OAuth production readiness",
+      "publisher": "official",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    },
+    {
+      "id": "src_2",
+      "url": "https://support.google.com/cloud/answer/15549945",
+      "title": "Google Cloud help: app publishing status",
+      "publisher": "official",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    },
+    {
+      "id": "src_3",
+      "url": "https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification",
+      "title": "Restricted scope verification",
+      "publisher": "official",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    },
+    {
+      "id": "src_4",
+      "url": "https://openwearables.io/blog/google-casa-oauth-verification-health-apps",
+      "title": "Google CASA OAuth verification",
+      "publisher": "third_party",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    },
+    {
+      "id": "src_5",
+      "url": "https://singhamandeep.com/?p=1003",
+      "title": "Restricted scope verification timeline",
+      "publisher": "community",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    }
+  ],
+  "uncertainties": [
+    "CASA price and the 4-8 week timeline come from third parties; Google publishes neither.",
+    "Developer effort for CASA is a guess and not sourced.",
+    "Console steps are unverified until the hands-on attempt (PRD section 11)."
+  ],
+  "meta": {
+    "origin": "seed",
+    "generatedAt": "2026-10-27T00:00:00.000Z",
+    "model": "hand-assembled from PRD section 12",
+    "durationMs": 0,
+    "tokensIn": 0,
+    "tokensOut": 0,
+    "costUsd": 0,
+    "reviewedByHuman": false,
+    "validationWarnings": [
+      "Seeded from PRD section 12 facts. Hands-on attempts (PRD section 11) are still pending, so console steps are unverified."
+    ]
+  }
+}

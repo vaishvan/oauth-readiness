@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "slug": "slack",
+  "appName": "Slack",
+  "appUrl": "https://slack.com/",
+  "developerConsoleUrl": "https://api.slack.com/apps",
+  "docsUrl": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+  "oauthVersion": "oauth2",
+  "pkceSupported": "unknown",
+  "refreshTokens": "unknown",
+  "composioManaged": "unknown",
+  "verdict": {
+    "difficulty": 2,
+    "label": "Easy",
+    "oneLiner": "Public distribution is instant; the optional Marketplace listing takes weeks and needs 5+ active workspaces first.",
+    "timeToS1": {
+      "lowMin": 14,
+      "highMin": 23
+    },
+    "timeToS3": {
+      "lowDays": 0.4,
+      "highDays": 85,
+      "hasReview": true
+    },
+    "s2Limit": "Unlisted apps may get tighter API rate limits (unverified)",
+    "agentShare": 0.29
+  },
+  "scopes": [
+    {
+      "name": "chat:write",
+      "tier": "basic"
+    },
+    {
+      "name": "channels:history",
+      "tier": "sensitive"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "req_1",
+      "label": "Slack workspace to develop in",
+      "category": "account",
+      "requiredAt": "S0",
+      "claimIds": []
+    },
+    {
+      "id": "req_2",
+      "label": "Installed on 5+ active workspaces",
+      "category": "business",
+      "requiredAt": "S3",
+      "claimIds": [
+        "clm_2"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "stp_1",
+      "stage": "S0",
+      "title": "Draft the app manifest",
+      "detail": "List the bot and user scopes you need and the redirect URL.",
+      "owner": "agent",
+      "agentAction": "Generate a manifest from your feature list.",
+      "estMinutes": {
+        "low": 3,
+        "high": 6
+      },
+      "claimIds": []
+    },
+    {
+      "id": "stp_2",
+      "stage": "S0",
+      "title": "Create the app from the manifest",
+      "detail": "Use Create New App, From a manifest.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 3,
+        "high": 5
+      },
+      "url": "https://api.slack.com/apps",
+      "claimIds": []
+    },
+    {
+      "id": "stp_3",
+      "stage": "S1",
+      "title": "Install to your workspace and run OAuth",
+      "detail": "Run the OAuth v2 flow once and store the tokens server-side.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 8,
+        "high": 12
+      },
+      "claimIds": []
+    },
+    {
+      "id": "stp_4",
+      "stage": "S2",
+      "title": "Enable public distribution",
+      "detail": "Activate distribution and install into a second workspace.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      },
+      "claimIds": [
+        "clm_6",
+        "clm_7"
+      ]
+    },
+    {
+      "id": "stp_5",
+      "stage": "S3",
+      "title": "Prepare Marketplace listing materials",
+      "detail": "Draft listing copy, support and privacy links, and a test plan for reviewers.",
+      "owner": "agent",
+      "agentAction": "Draft listing text and review answers.",
+      "estMinutes": {
+        "low": 30,
+        "high": 60
+      },
+      "claimIds": []
+    },
+    {
+      "id": "stp_6",
+      "stage": "S3",
+      "title": "Reach 5+ active workspaces",
+      "detail": "Marketplace submission needs real usage first.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 30,
+        "high": 120
+      },
+      "claimIds": [
+        "clm_2"
+      ]
+    },
+    {
+      "id": "stp_7",
+      "stage": "S3",
+      "title": "Wait for Marketplace review (optional)",
+      "detail": "Preliminary then functional review. Docs give upper bounds only.",
+      "owner": "provider",
+      "estMinutes": {
+        "low": 0,
+        "high": 0
+      },
+      "waitDays": {
+        "low": 0,
+        "high": 84
+      },
+      "claimIds": [
+        "clm_1",
+        "clm_3",
+        "clm_5"
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "blk_1",
+      "symptom": "redirect_uri_mismatch",
+      "cause": "The redirect_uri differs from one saved in the app settings.",
+      "fix": "Add the exact URL under OAuth & Permissions > Redirect URLs.",
+      "claimIds": []
+    }
+  ],
+  "claims": [
+    {
+      "id": "clm_1",
+      "text": "Marketplace review: preliminary review up to 10 business days, functional review up to 10 weeks for new apps.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_1"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.85
+    },
+    {
+      "id": "clm_2",
+      "text": "An app must be installed on 5+ active workspaces before Marketplace submission (third-party quoting Slack).",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_2"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.6
+    },
+    {
+      "id": "clm_3",
+      "text": "Each resubmission resets the preliminary-review queue position.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_3"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "clm_4",
+      "text": "After listing, config, scopes and endpoints are locked; changes need re-review.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_4"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "clm_5",
+      "text": "The older guide said up to 1 week and up to 8 weeks; the newer docs.slack.dev figures are longer.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_3",
+          "src_1"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "clm_6",
+      "text": "Enabling public distribution lets any workspace install the app without Slack review.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Settle by installing to a second free workspace."
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_7",
+      "text": "Non-Marketplace apps can face stricter rate limits on some read methods.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "From memory; check the current rate-limit docs."
+      },
+      "confidence": 0.3
+    }
+  ],
+  "sources": [
+    {
+      "id": "src_1",
+      "url": "https://docs.slack.dev/slack-marketplace/slack-marketplace-review-guide",
+      "title": "Slack Marketplace review guide",
+      "publisher": "official",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    },
+    {
+      "id": "src_2",
+      "url": "https://workos.com/blog/oauth-app-approval-slack-microsoft-atlassian",
+      "title": "WorkOS: OAuth app approval",
+      "publisher": "third_party",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    },
+    {
+      "id": "src_3",
+      "url": "https://api.slack.com/directory/app-review-guide",
+      "title": "Slack app review guide (older)",
+      "publisher": "official",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    },
+    {
+      "id": "src_4",
+      "url": "https://slack.com/blog/news/slack-app-directory-review-process",
+      "title": "Slack blog: app directory review",
+      "publisher": "official",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    }
+  ],
+  "uncertainties": [
+    "Docs give only upper bounds for review time, so the low bound is 0.",
+    "Marketplace review is optional; S3 here means listed. Distribution to any workspace is already open at S2 (unverified)."
+  ],
+  "meta": {
+    "origin": "seed",
+    "generatedAt": "2026-10-27T00:00:00.000Z",
+    "model": "hand-assembled from PRD section 12",
+    "durationMs": 0,
+    "tokensIn": 0,
+    "tokensOut": 0,
+    "costUsd": 0,
+    "reviewedByHuman": false,
+    "validationWarnings": [
+      "Seeded from PRD section 12 facts. Hands-on attempts (PRD section 11) are still pending, so console steps are unverified."
+    ]
+  }
+}

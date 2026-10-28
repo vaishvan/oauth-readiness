@@ -1,0 +1,314 @@
+{
+  "schemaVersion": 1,
+  "slug": "linkedin-community-management",
+  "appName": "LinkedIn (Community Mgmt)",
+  "appUrl": "https://www.linkedin.com/",
+  "developerConsoleUrl": "https://www.linkedin.com/developers/apps",
+  "docsUrl": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management-app-review",
+  "oauthVersion": "oauth2",
+  "pkceSupported": "unknown",
+  "refreshTokens": "unknown",
+  "composioManaged": "unknown",
+  "verdict": {
+    "difficulty": 4,
+    "label": "Hard",
+    "oneLiner": "Gated before you can test: approval first, then a tight cap, and a rejected app cannot reapply.",
+    "timeToS1": {
+      "lowMin": 60,
+      "highMin": 120
+    },
+    "timeToS3": {
+      "lowDays": 16,
+      "highDays": 106,
+      "hasReview": true
+    },
+    "s2Limit": "Development tier: 500 calls per app per 24 hours",
+    "agentShare": 0.22
+  },
+  "scopes": [
+    {
+      "name": "r_organization_social",
+      "tier": "sensitive",
+      "note": "Community Management scopes need the product approved."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "req_1",
+      "label": "Company LinkedIn Page",
+      "category": "business",
+      "requiredAt": "S0",
+      "claimIds": [
+        "clm_6"
+      ]
+    },
+    {
+      "id": "req_2",
+      "label": "Verified organization website and domain",
+      "category": "brand",
+      "requiredAt": "S1",
+      "claimIds": [
+        "clm_2"
+      ]
+    },
+    {
+      "id": "req_3",
+      "label": "Screencast of each use case",
+      "category": "technical",
+      "requiredAt": "S3",
+      "claimIds": [
+        "clm_4"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "stp_1",
+      "stage": "S0",
+      "title": "Create the app and link the Company Page",
+      "detail": "Create the app and send the page admin a verification request.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 10,
+        "high": 20
+      },
+      "url": "https://www.linkedin.com/developers/apps",
+      "claimIds": [
+        "clm_6"
+      ]
+    },
+    {
+      "id": "stp_2",
+      "stage": "S0",
+      "title": "Draft the use-case description",
+      "detail": "Explain what the integration does and why it needs each product.",
+      "owner": "agent",
+      "agentAction": "Draft the application text from your feature list.",
+      "estMinutes": {
+        "low": 20,
+        "high": 40
+      },
+      "claimIds": []
+    },
+    {
+      "id": "stp_3",
+      "stage": "S1",
+      "title": "Verify website and domain; request Development tier",
+      "detail": "The page admin verifies the app, then you apply for the Development tier.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 15,
+        "high": 30
+      },
+      "claimIds": [
+        "clm_2"
+      ]
+    },
+    {
+      "id": "stp_4",
+      "stage": "S1",
+      "title": "Wait for Development tier approval",
+      "detail": "Nothing can be tested until this clears. Duration is not published.",
+      "owner": "provider",
+      "estMinutes": {
+        "low": 0,
+        "high": 0
+      },
+      "waitDays": {
+        "low": 1,
+        "high": 14
+      },
+      "claimIds": [
+        "clm_5"
+      ]
+    },
+    {
+      "id": "stp_5",
+      "stage": "S1",
+      "title": "Run the OAuth flow",
+      "detail": "Test inside the Development tier cap.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 15,
+        "high": 30
+      },
+      "claimIds": [
+        "clm_1"
+      ]
+    },
+    {
+      "id": "stp_6",
+      "stage": "S2",
+      "title": "Operate within the cap",
+      "detail": "500 calls per app per day; 12-month window.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 10,
+        "high": 30
+      },
+      "claimIds": [
+        "clm_1"
+      ]
+    },
+    {
+      "id": "stp_7",
+      "stage": "S3",
+      "title": "Script the use-case screencast",
+      "detail": "Plan one recording per use case.",
+      "owner": "agent",
+      "agentAction": "Write the screencast script.",
+      "estMinutes": {
+        "low": 20,
+        "high": 40
+      },
+      "claimIds": []
+    },
+    {
+      "id": "stp_8",
+      "stage": "S3",
+      "title": "Record screencasts and apply for Standard tier",
+      "detail": "Submit a screencast for every use case.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 60,
+        "high": 180
+      },
+      "claimIds": [
+        "clm_4"
+      ]
+    },
+    {
+      "id": "stp_9",
+      "stage": "S3",
+      "title": "Wait for Standard tier review",
+      "detail": "Duration is not published; a rejection means a new app.",
+      "owner": "provider",
+      "estMinutes": {
+        "low": 0,
+        "high": 0
+      },
+      "waitDays": {
+        "low": 14,
+        "high": 90
+      },
+      "claimIds": [
+        "clm_3",
+        "clm_5"
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "blk_1",
+      "symptom": "Application rejected",
+      "cause": "reapply_penalty: a rejected app cannot reapply.",
+      "fix": "Create a new app, fix the cause in the use-case or screencast, and resubmit.",
+      "claimIds": [
+        "clm_3"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "clm_1",
+      "text": "Development tier: 500 calls per app per 24 hours, 100 per member, 12-month window.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_1"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.9
+    },
+    {
+      "id": "clm_2",
+      "text": "Development tier needs a verified organization website and domain, and the app verified by the company LinkedIn Page.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_2"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "clm_3",
+      "text": "A rejected app cannot reapply; you must create a new app.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_2"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "clm_4",
+      "text": "The Standard tier requires a screencast of each use case.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_2"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "clm_5",
+      "text": "Approval wait times for both tiers are not published in the pages checked.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "The waits below are ranges to confirm, not sourced figures."
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_6",
+      "text": "Create the app at linkedin.com/developers/apps and associate it with a company LinkedIn Page.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Not yet tested by hand; confirm in the console."
+      },
+      "confidence": 0.3
+    }
+  ],
+  "sources": [
+    {
+      "id": "src_1",
+      "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-api-migration-guide",
+      "title": "Community Management API migration guide",
+      "publisher": "official",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    },
+    {
+      "id": "src_2",
+      "url": "https://learn.microsoft.com/en-us/linkedin/marketing/community-management-app-review",
+      "title": "Community Management app review",
+      "publisher": "official",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    }
+  ],
+  "uncertainties": [
+    "Approval wait times are estimates; LinkedIn does not publish them in the pages checked.",
+    "LinkedIn Standard tier approval time cannot be verified without a paid, approved account."
+  ],
+  "meta": {
+    "origin": "seed",
+    "generatedAt": "2026-10-27T00:00:00.000Z",
+    "model": "hand-assembled from PRD section 12",
+    "durationMs": 0,
+    "tokensIn": 0,
+    "tokensOut": 0,
+    "costUsd": 0,
+    "reviewedByHuman": false,
+    "validationWarnings": [
+      "Seeded from PRD section 12 facts. Hands-on attempts (PRD section 11) are still pending, so console steps are unverified."
+    ]
+  }
+}

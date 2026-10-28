@@ -1,0 +1,73 @@
+{
+  "ranAt": "2026-10-28T06:36:37.491Z",
+  "mock": false,
+  "passed": 0,
+  "of": 5,
+  "p50Ms": 135876,
+  "maxMs": 211141,
+  "results": [
+    {
+      "app": "Zoho CRM",
+      "status": "done",
+      "ms": 135876,
+      "schemaValid": true,
+      "evidencedShare": 0.5,
+      "officialSources": 7,
+      "difficulty": 1,
+      "costUsd": 0,
+      "warnings": [],
+      "error": null,
+      "pass": false
+    },
+    {
+      "app": "Pipedrive",
+      "status": "done",
+      "ms": 115015,
+      "schemaValid": true,
+      "evidencedShare": 0.36,
+      "officialSources": 8,
+      "difficulty": 2,
+      "costUsd": 0,
+      "warnings": [],
+      "error": null,
+      "pass": false
+    },
+    {
+      "app": "Calendly",
+      "status": "done",
+      "ms": 115574,
+      "schemaValid": true,
+      "evidencedShare": 0.67,
+      "officialSources": 8,
+      "difficulty": 1,
+      "costUsd": 0,
+      "warnings": [],
+      "error": null,
+      "pass": false
+    },
+    {
+      "app": "Dropbox",
+      "status": "done",
+      "ms": 150475,
+      "schemaValid": true,
+      "evidencedShare": 0.5,
+      "officialSources": 1,
+      "difficulty": 1,
+      "costUsd": 0,
+      "warnings": [],
+      "error": null,
+      "pass": false
+    },
+    {
+      "app": "Typeform",
+      "status": "failed",
+      "ms": 211141,
+      "schemaValid": false,
+      "evidencedShare": 0,
+      "officialSources": 0,
+      "warnings": [],
+      "error": "extract timed out after 200s",
+      "pass": false
+    }
+  ]
+}

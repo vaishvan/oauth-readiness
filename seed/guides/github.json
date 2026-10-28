@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "slug": "github",
+  "appName": "GitHub",
+  "appUrl": "https://github.com/",
+  "developerConsoleUrl": "https://github.com/settings/developers",
+  "docsUrl": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+  "oauthVersion": "oauth2",
+  "pkceSupported": "unknown",
+  "refreshTokens": "unknown",
+  "composioManaged": "unknown",
+  "verdict": {
+    "difficulty": 1,
+    "label": "Instant",
+    "oneLiner": "Self-serve and no review: register an OAuth App and any GitHub user can authorize it.",
+    "timeToS1": {
+      "lowMin": 11,
+      "highMin": 20
+    },
+    "timeToS3": {
+      "lowDays": 0.1,
+      "highDays": 0.1,
+      "hasReview": false
+    },
+    "s2Limit": null,
+    "agentShare": 0.33
+  },
+  "scopes": [
+    {
+      "name": "read:user",
+      "tier": "basic"
+    },
+    {
+      "name": "repo",
+      "tier": "sensitive",
+      "note": "Full private repo access."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "req_1",
+      "label": "GitHub account",
+      "category": "account",
+      "requiredAt": "S0",
+      "claimIds": [
+        "clm_5"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "stp_1",
+      "stage": "S0",
+      "title": "Choose OAuth App or GitHub App",
+      "detail": "GitHub recommends GitHub Apps for new work. Pick an OAuth App only if you need user-level access with a simple flow.",
+      "owner": "agent",
+      "agentAction": "Compare permission models against your feature list.",
+      "estMinutes": {
+        "low": 2,
+        "high": 5
+      },
+      "claimIds": [
+        "clm_1"
+      ]
+    },
+    {
+      "id": "stp_2",
+      "stage": "S0",
+      "title": "Register the OAuth App",
+      "detail": "Open Developer settings, choose New OAuth App, fill name, homepage URL and callback URL.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 3,
+        "high": 5
+      },
+      "url": "https://github.com/settings/developers",
+      "claimIds": [
+        "clm_5"
+      ]
+    },
+    {
+      "id": "stp_3",
+      "stage": "S1",
+      "title": "Set one callback URL",
+      "detail": "Register the exact callback you will use. Sources disagree on multiple callbacks (see the uncertainties), so plan for one.",
+      "owner": "agent",
+      "agentAction": "Derive the callback URL from your deployment host.",
+      "estMinutes": {
+        "low": 1,
+        "high": 2
+      },
+      "claimIds": [
+        "clm_2",
+        "clm_3"
+      ]
+    },
+    {
+      "id": "stp_4",
+      "stage": "S1",
+      "title": "Create a client secret",
+      "detail": "Generate a secret on the app page and store it in your server environment. Never commit it.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 2,
+        "high": 3
+      },
+      "claimIds": []
+    },
+    {
+      "id": "stp_5",
+      "stage": "S1",
+      "title": "Run the authorization code flow",
+      "detail": "Authorize with your own account and exchange the code for a token.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 3,
+        "high": 5
+      },
+      "claimIds": [
+        "clm_7"
+      ]
+    },
+    {
+      "id": "stp_6",
+      "stage": "S3",
+      "title": "Share the authorize link with other users",
+      "detail": "No review stands between you and other users.",
+      "owner": "you",
+      "estMinutes": {
+        "low": 1,
+        "high": 2
+      },
+      "claimIds": [
+        "clm_6"
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "blk_1",
+      "symptom": "redirect_uri_mismatch",
+      "cause": "The redirect_uri in the request does not match the callback registered on the app.",
+      "fix": "Register the exact URL (scheme, host, port, path) or send the registered one.",
+      "claimIds": [
+        "clm_2"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "clm_1",
+      "text": "GitHub recommends GitHub Apps over OAuth Apps (fine-grained permissions, short-lived tokens).",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_1"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "clm_2",
+      "text": "GitHub docs say an OAuth App cannot have multiple callback URLs.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_1"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.8
+    },
+    {
+      "id": "clm_3",
+      "text": "Unified.to reports up to 10 callback URLs per OAuth App, with wildcard matching as a per-URL setting since 2026-08-03.",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_2"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.6
+    },
+    {
+      "id": "clm_4",
+      "text": "An account can own up to 100 OAuth Apps (third-party figure).",
+      "evidence": {
+        "kind": "sourced",
+        "sourceIds": [
+          "src_2"
+        ],
+        "note": "Checked against the linked page on 2026-10-27."
+      },
+      "confidence": 0.6
+    },
+    {
+      "id": "clm_5",
+      "text": "Register under Settings > Developer settings > OAuth Apps > New OAuth App. Fields: name, homepage URL, callback URL.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Not yet tested by hand; confirm in the console."
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_6",
+      "text": "No review exists for OAuth Apps; any GitHub user can authorize one.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Not yet tested by hand; confirm in the console."
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_7",
+      "text": "OAuth App user tokens do not expire unless the app opts in to expiring tokens.",
+      "evidence": {
+        "kind": "unverified",
+        "sourceIds": [],
+        "note": "Not yet tested by hand; confirm in the console."
+      },
+      "confidence": 0.3
+    }
+  ],
+  "sources": [
+    {
+      "id": "src_1",
+      "url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+      "title": "Creating an OAuth app",
+      "publisher": "official",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    },
+    {
+      "id": "src_2",
+      "url": "https://docs.unified.to/skills/github-oauth-app/SKILL.md",
+      "title": "Unified.to: GitHub OAuth app skill",
+      "publisher": "third_party",
+      "fetchedAt": "2026-10-27T00:00:00.000Z"
+    }
+  ],
+  "uncertainties": [
+    "Sources conflict on multiple callback URLs: GitHub docs say one, Unified.to says up to 10. To be settled by a hands-on test (PRD section 10).",
+    "Composio-managed status was not checked; read composio_managed_auth_schemes for the github toolkit."
+  ],
+  "meta": {
+    "origin": "seed",
+    "generatedAt": "2026-10-27T00:00:00.000Z",
+    "model": "hand-assembled from PRD section 12",
+    "durationMs": 0,
+    "tokensIn": 0,
+    "tokensOut": 0,
+    "costUsd": 0,
+    "reviewedByHuman": false,
+    "validationWarnings": [
+      "Seeded from PRD section 12 facts. Hands-on attempts (PRD section 11) are still pending, so console steps are unverified."
+    ]
+  }
+}

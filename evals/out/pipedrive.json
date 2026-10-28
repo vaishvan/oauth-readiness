@@ -1,0 +1,531 @@
+{
+  "meta": {
+    "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "origin": "live",
+    "costUsd": 0,
+    "tokensIn": 25458,
+    "tokensOut": 5506,
+    "durationMs": 115006,
+    "generatedAt": "2026-10-28T06:28:40.246Z",
+    "promptVersion": "extract.v1",
+    "reviewedByHuman": false,
+    "validationWarnings": []
+  },
+  "slug": "pipedrive",
+  "steps": [
+    {
+      "id": "stp_create_account",
+      "owner": "you",
+      "stage": "S0",
+      "title": "Create a Pipedrive account",
+      "detail": "Sign up at pipedrive.com if you don't already have one. You need a user account to access the developer portal.",
+      "claimIds": [
+        "clm_account"
+      ],
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      }
+    },
+    {
+      "id": "stp_register_developer",
+      "owner": "you",
+      "stage": "S0",
+      "title": "Register as a developer",
+      "detail": "Go to https://developers.pipedrive.com/ and sign in with your Pipedrive account. Accept the developer terms to access the Marketplace developer console.",
+      "claimIds": [
+        "clm_dev_reg"
+      ],
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      }
+    },
+    {
+      "id": "stp_create_app",
+      "owner": "you",
+      "stage": "S0",
+      "title": "Create a new app in the developer console",
+      "detail": "In the Marketplace developer console, click 'Create app'. Fill in app name, description, logo, and company details. On the 'OAuth & access scopes' tab, add your redirect URI(s) — must be HTTPS and exact match. Select required scopes (base, webhooks:read, webhooks:full, etc.). Save to get your client_id and client_secret.",
+      "claimIds": [
+        "clm_app_reg",
+        "clm_redirect"
+      ],
+      "estMinutes": {
+        "low": 15,
+        "high": 30
+      }
+    },
+    {
+      "id": "stp_implement_auth_flow",
+      "owner": "you",
+      "stage": "S1",
+      "title": "Implement the authorization code flow",
+      "detail": "Redirect users to https://oauth.pipedrive.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&state={random_state}. After user clicks 'Allow and install', Pipedrive redirects back with ?code={auth_code}&state={state}. Exchange the code for tokens via POST to https://oauth.pipedrive.com/oauth/token with Basic auth (base64(client_id:client_secret)) and form body: grant_type=authorization_code&code={auth_code}&redirect_uri={redirect_uri}.",
+      "claimIds": [
+        "clm_auth_flow",
+        "clm_token_exchange"
+      ],
+      "estMinutes": {
+        "low": 30,
+        "high": 60
+      }
+    },
+    {
+      "id": "stp_handle_refresh",
+      "owner": "you",
+      "stage": "S1",
+      "title": "Implement token refresh",
+      "detail": "Access tokens expire in ~1 hour (expires_in=3599). To refresh, POST to https://oauth.pipedrive.com/oauth/token with Basic auth and form body: grant_type=refresh_token&refresh_token={refresh_token}. Store the new access_token and refresh_token (rotate).",
+      "claimIds": [
+        "clm_refresh"
+      ],
+      "estMinutes": {
+        "low": 10,
+        "high": 20
+      }
+    },
+    {
+      "id": "stp_test_private",
+      "owner": "you",
+      "stage": "S1",
+      "title": "Test with your own Pipedrive account (private app)",
+      "detail": "Install the app on your own company account via the OAuth flow. Verify API calls work using the returned api_domain (e.g., https://your-company.pipedrive.com). Private apps support up to 3 users without Marketplace review.",
+      "claimIds": [
+        "clm_private_test"
+      ],
+      "estMinutes": {
+        "low": 10,
+        "high": 20
+      }
+    },
+    {
+      "id": "stp_prepare_public",
+      "owner": "you",
+      "stage": "S2",
+      "title": "Prepare for public Marketplace submission",
+      "detail": "Add privacy policy URL, terms of service, support email, and detailed app description in the developer console. Ensure all redirect URIs are production HTTPS endpoints. Test uninstall/reinstall flow.",
+      "claimIds": [
+        "clm_privacy",
+        "clm_public_prep"
+      ],
+      "estMinutes": {
+        "low": 30,
+        "high": 60
+      }
+    },
+    {
+      "id": "stp_submit_review",
+      "owner": "provider",
+      "stage": "S3",
+      "title": "Submit for Marketplace review",
+      "detail": "Click 'Submit for review' in the developer console. Pipedrive reviews functionality, security, and compliance. Community reports indicate reviews can take 2+ months. You'll receive feedback or approval via email.",
+      "claimIds": [
+        "clm_review"
+      ],
+      "waitDays": {
+        "low": 60,
+        "high": 120
+      },
+      "estMinutes": {
+        "low": 0,
+        "high": 0
+      }
+    },
+    {
+      "id": "stp_publish",
+      "owner": "you",
+      "stage": "S3",
+      "title": "Publish to Marketplace",
+      "detail": "Once approved, toggle the app to 'Public' in the console. It will appear in the Pipedrive Marketplace for any user to install.",
+      "claimIds": [
+        "clm_publish"
+      ],
+      "estMinutes": {
+        "low": 5,
+        "high": 10
+      }
+    }
+  ],
+  "appUrl": "https://www.pipedrive.com",
+  "claims": [
+    {
+      "id": "clm_account",
+      "text": "A Pipedrive user account is required to access the developer portal.",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "Using OAuth 2.0 is necessary for developing apps that are available in the Pipedrive Marketplace.",
+        "sourceIds": []
+      },
+      "confidence": 0.18
+    },
+    {
+      "id": "clm_dev_reg",
+      "text": "Developers must register at developers.pipedrive.com to create apps.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "Please read more about authorization step on the Pipedrive Developers page",
+        "sourceIds": [
+          "src_1"
+        ]
+      },
+      "confidence": 0.63
+    },
+    {
+      "id": "clm_app_reg",
+      "text": "Apps are created in the Marketplace developer console; client_id and client_secret are generated there.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "The client ID provided to you by the Pipedrive Marketplace when you register your app",
+        "sourceIds": [
+          "src_1"
+        ]
+      },
+      "confidence": 0.63
+    },
+    {
+      "id": "clm_redirect",
+      "text": "Redirect URI must exactly match the value registered in the app configuration.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "The callback URL you provided when you registered your app. Authorization code will be sent to that URL (if it matches with the value you entered in the registration form)",
+        "sourceIds": [
+          "src_1"
+        ]
+      },
+      "confidence": 0.9
+    },
+    {
+      "id": "clm_auth_flow",
+      "text": "Authorization endpoint is https://oauth.pipedrive.com/oauth/authorize with client_id, redirect_uri, state.",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "GET /oauth/authorize ... client_id ... redirect_uri ... state",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_token_exchange",
+      "text": "Token endpoint is https://oauth.pipedrive.com/oauth/token using Basic auth and grant_type=authorization_code.",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "POST /oauth/token ... Authorization: Basic <base64(client_id:client_secret)> ... grant_type=authorization_code",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_refresh",
+      "text": "Refresh tokens are supported; access tokens expire in ~1 hour (expires_in=3599).",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "expires_in:3599 ... refresh_token ... grant_type=refresh_token",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_private_test",
+      "text": "Private apps can be installed on up to 3 users without Marketplace review.",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "Private apps work for up to 3 users; public apps need Marketplace approval.",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_privacy",
+      "text": "Public apps require a privacy policy URL in the developer console.",
+      "evidence": {
+        "kind": "unverified",
+        "note": "Standard Marketplace requirement; not explicitly in provided docs but implied by partner program.",
+        "sourceIds": []
+      },
+      "confidence": 0.5
+    },
+    {
+      "id": "clm_public_prep",
+      "text": "Public submission requires complete app metadata, privacy policy, and production redirect URIs.",
+      "evidence": {
+        "kind": "unverified",
+        "note": "Inferred from typical Marketplace requirements.",
+        "sourceIds": []
+      },
+      "confidence": 0.5
+    },
+    {
+      "id": "clm_review",
+      "text": "Public apps must pass Marketplace review; community reports 2+ month wait times.",
+      "evidence": {
+        "kind": "sourced",
+        "quote": "Public app review pending for 2+ months",
+        "sourceIds": [
+          "src_3"
+        ]
+      },
+      "confidence": 0.63
+    },
+    {
+      "id": "clm_publish",
+      "text": "Approved apps are toggled public in the developer console.",
+      "evidence": {
+        "kind": "unverified",
+        "note": "Standard Marketplace flow.",
+        "sourceIds": []
+      },
+      "confidence": 0.5
+    },
+    {
+      "id": "clm_no_client_creds",
+      "text": "Pipedrive does not support OAuth 2.0 client credentials flow (machine-to-machine).",
+      "evidence": {
+        "kind": "unverified",
+        "quote": "We have a section on OAuth authorization in our Developer Documentation ... using client_id and client_secret ... without any redirect url and user confirmation ... not supported",
+        "sourceIds": []
+      },
+      "confidence": 0.3
+    },
+    {
+      "id": "clm_probe_console",
+      "text": "GET https://developers.pipedrive.com/ → HTTP 200",
+      "evidence": {
+        "kind": "tested",
+        "note": "Probe console, unauthenticated GET, 2026-10-28",
+        "sourceIds": []
+      },
+      "confidence": 1
+    }
+  ],
+  "scopes": [
+    {
+      "name": "base",
+      "note": "Default scope returned in token response; grants core CRM access.",
+      "tier": "basic"
+    },
+    {
+      "name": "webhooks:read",
+      "note": "Read-only access to list webhooks (GET /v1/webhooks).",
+      "tier": "basic"
+    },
+    {
+      "name": "webhooks:full",
+      "note": "Full webhook management: list, create, delete (GET/POST/DELETE /v1/webhooks).",
+      "tier": "sensitive"
+    },
+    {
+      "name": "admin",
+      "note": "Legacy broad scope; still works for webhooks but being replaced by granular scopes.",
+      "tier": "restricted"
+    }
+  ],
+  "appName": "Pipedrive",
+  "docsUrl": "https://developers.pipedrive.com/docs/api/v1/Oauth",
+  "sources": [
+    {
+      "id": "src_1",
+      "url": "https://developers.pipedrive.com/docs/api/v1/Oauth",
+      "title": "Pipedrive API v1 Dev References (Oauth) - Learn - Test - Try Now",
+      "fetchedAt": "2026-10-28T06:26:53.290Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_2",
+      "url": "https://devcommunity.pipedrive.com/t/does-pipedrive-support-oauth2-with-client-credentials-flow/6006",
+      "title": "Does Pipedrive support OAuth2 with client credentials flow? - API - Pipedrive Developers' Community",
+      "fetchedAt": "2026-10-28T06:26:53.293Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_3",
+      "url": "https://devcommunity.pipedrive.com/t/oauth-authorization-step-4-and-step-5-getting-the-tokens/7821",
+      "title": "OAuth authorization. Step 4 and Step 5: Getting the tokens - App Development - Pipedrive Developers' Community",
+      "fetchedAt": "2026-10-28T06:26:53.296Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_4",
+      "url": "https://devcommunity.pipedrive.com/t/identify-auth-code-with-parther-client-id/6877",
+      "title": "Identify auth code with parther client id - API - Pipedrive Developers' Community",
+      "fetchedAt": "2026-10-28T06:26:53.300Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_5",
+      "url": "https://www.pipedrive.com/en/partner",
+      "title": "Partner Page | CRM Partners | Pipedrive",
+      "fetchedAt": "2026-10-28T06:26:53.304Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_6",
+      "url": "https://www.pipedrive.com/en/marketplace",
+      "title": "Pipedrive Marketplace | CRM Extensions & Apps",
+      "fetchedAt": "2026-10-28T06:26:53.306Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_7",
+      "url": "https://www.pipedrive.com/en/solution-provider-partnership",
+      "title": "Solution Partner Program | Pipedrive",
+      "fetchedAt": "2026-10-28T06:26:53.308Z",
+      "publisher": "official"
+    },
+    {
+      "id": "src_8",
+      "url": "https://developers.pipedrive.com/changelog/post/introducing-new-oauth-scopes-for-webhooks",
+      "title": "Introducing new OAuth scopes for Webhooks",
+      "fetchedAt": "2026-10-28T06:26:53.310Z",
+      "publisher": "official"
+    }
+  ],
+  "verdict": {
+    "label": "Easy",
+    "s2Limit": "Private apps work for up to 3 users; public apps need Marketplace approval.",
+    "oneLiner": "OAuth 2.0 authorization code flow only; public Marketplace apps require review (often 2+ months). No client-credentials or PKCE.",
+    "timeToS1": {
+      "lowMin": 75,
+      "highMin": 150
+    },
+    "timeToS3": {
+      "lowDays": 61,
+      "highDays": 121,
+      "hasReview": true
+    },
+    "agentShare": 0,
+    "difficulty": 2
+  },
+  "blockers": [
+    {
+      "id": "blk_redirect_mismatch",
+      "fix": "Copy the redirect URI exactly from the 'OAuth & access scopes' tab. Use HTTPS. Ensure no extra query parameters. Test with a known-good value first.",
+      "cause": "The redirect_uri in the authorize request or token request does not exactly match the URI registered in the developer console (including trailing slash, scheme, port).",
+      "symptom": "redirect_uri_mismatch error on authorization or token exchange",
+      "claimIds": [
+        "clm_redirect"
+      ]
+    },
+    {
+      "id": "blk_invalid_grant",
+      "fix": "Exchange code immediately after redirect. On refresh failure, restart the full OAuth flow.",
+      "cause": "Authorization code expired (codes valid ~5 minutes), already used, or refresh token revoked/revoked due to scope change.",
+      "symptom": "invalid_grant error when exchanging code or refreshing token",
+      "claimIds": [
+        "clm_token_exchange",
+        "clm_refresh"
+      ]
+    },
+    {
+      "id": "blk_no_client_credentials",
+      "fix": "Use a long-lived refresh token from a user-authorized session, or use a personal API token (not OAuth) for server-to-server scripts.",
+      "cause": "Pipedrive does not support OAuth 2.0 client credentials flow (confirmed by Pipedrive staff in community). Only authorization code flow is available.",
+      "symptom": "Need machine-to-machine access without user interaction",
+      "claimIds": [
+        "clm_no_client_creds"
+      ]
+    },
+    {
+      "id": "blk_review_delay",
+      "fix": "Ensure submission is complete (privacy policy, test account, demo video). Follow up via devcommunity.pipedrive.com. No reapply_penalty — you can update the same submission.",
+      "cause": "Marketplace review queue backlog; no published SLA.",
+      "symptom": "Public app stuck in review for months",
+      "claimIds": [
+        "clm_review"
+      ]
+    }
+  ],
+  "oauthVersion": "oauth2",
+  "requirements": [
+    {
+      "id": "req_pipedrive_account",
+      "label": "Pipedrive user account",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "account",
+      "claimIds": [
+        "clm_account"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_developer_registration",
+      "label": "Register as a developer on developers.pipedrive.com",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "account",
+      "claimIds": [
+        "clm_dev_reg"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_app_registration",
+      "label": "Create an app in the Marketplace developer console",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "technical",
+      "claimIds": [
+        "clm_app_reg"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_redirect_uri",
+      "label": "HTTPS redirect URI (exact match required)",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "technical",
+      "claimIds": [
+        "clm_redirect"
+      ],
+      "requiredAt": "S0"
+    },
+    {
+      "id": "req_privacy_policy",
+      "label": "Privacy policy URL for public apps",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "legal",
+      "claimIds": [
+        "clm_privacy"
+      ],
+      "requiredAt": "S3"
+    },
+    {
+      "id": "req_marketplace_review",
+      "label": "Pass Marketplace review for public listing",
+      "costUsd": {
+        "low": 0,
+        "high": 0
+      },
+      "category": "business",
+      "claimIds": [
+        "clm_review"
+      ],
+      "requiredAt": "S3"
+    }
+  ],
+  "pkceSupported": "unknown",
+  "refreshTokens": "yes",
+  "schemaVersion": 1,
+  "uncertainties": [
+    "PKCE support not documented; assume not supported.",
+    "Exact private-app user limit (3) inferred from community; not in official docs.",
+    "Privacy policy requirement for public apps not explicitly in provided docs.",
+    "No published review SLA; wait time based on community reports.",
+    "Scope tier classifications (basic/sensitive/restricted) are inferred from scope descriptions."
+  ],
+  "composioManaged": "no",
+  "developerConsoleUrl": "https://developers.pipedrive.com/"
+}
